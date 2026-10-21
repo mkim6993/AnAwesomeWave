@@ -7,15 +7,21 @@ export interface BaseEffect {
     opacity: number;
 
     /** duration in ms */
-    duration:  number;
+    duration?:  number | typeof Infinity;
 }
 
-type EffectType = 'On' | 'Selection' | 'Rainbow' | 'Strobe' | 'Pulse';
+export type EffectType = 
+    'Solid-One' | // one solid color, duration(X)
+    'Solid-Multiple' | // random color in palette, duration(X)
+    'Cycle-Multiple' | // cycle through random colors in palette
+    'Rainbow' | // random color in rainbow palette
+    'Strobe' | // quick flashes of color in palette
+    'Pulse';
 
 export interface StandardEffect extends BaseEffect {
     /** standard effects */
     type: EffectType;
 
     /** set of colors */
-    pallete: string[];
+    palette?: string[];
 }
