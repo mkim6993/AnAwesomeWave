@@ -1,4 +1,4 @@
-import { StandardEffect, type EffectType } from '../../types/effects';
+import { StandardEffect, type EffectType } from '@AnAwesomeWave/shared';
 
 const rainbowPalette = [
 	'#FF0000',

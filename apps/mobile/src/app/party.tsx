@@ -4,7 +4,7 @@ import { Button, Dimensions, ScrollView, Text, View } from 'react-native';
 import { usePartyWebSocket } from '@/hooks/useWebSocket';
 import { useRouter } from 'expo-router';
 
-import { BaseEffect } from '@/types/effects';
+import { BaseEffect } from '@AnAwesomeWave/shared';
 
 const { width, height } = Dimensions.get('window');
 const partyWSURL = 'ws://127.0.0.1:3000/party/ws';

@@ -1,4 +1,4 @@
-import { BaseEffect } from '@/types/effects';
+import { BaseEffect } from '@AnAwesomeWave/shared';
 import { useEffect, useRef, useState } from 'react';
 
 // const WS_URL = 'ws://127.0.0.1:3000/party/ws';

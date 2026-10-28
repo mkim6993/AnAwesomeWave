@@ -1,4 +1,4 @@
-import { BaseEffect } from "./effects";
+import { BaseEffect } from '@AnAwesomeWave/shared';
 
 export type ControlType = 
   'light_event' |

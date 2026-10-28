@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { operatorApi } from '@/api/operator';
-import { DisconnectAllResponse } from '@/types/api/operator';
+import { DisconnectAllResponse } from '@AnAwesomeWave/shared';
 
 /**
  * Operator React Query Hooks

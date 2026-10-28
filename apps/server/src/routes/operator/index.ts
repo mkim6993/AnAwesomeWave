@@ -1,5 +1,5 @@
 import { type FastifyPluginAsync } from "fastify";
-import { BaseEffect } from '../../types/effects';
+import { BaseEffect } from '@AnAwesomeWave/shared';
 import { ConnectionOperation } from'../../types/party_controls';
 
 const operatorRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> => {

@@ -15,7 +15,6 @@
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts",
-     "../ML-Server/src/features/operator/api/operatorApi.ts", "../ML-Server/src/features/operator/types/operator.types.ts"
+    "expo-env.d.ts"
   ]
 }

@@ -1,5 +1,5 @@
 import { fetchApi } from './client';
-import { DisconnectAllRequest, DisconnectAllResponse } from '@/types/api/operator';
+import { DisconnectAllRequest, DisconnectAllResponse } from '@AnAwesomeWave/shared';
 
 /**
  * Operator API - Admin controls for WebSocket connections and lighting events
