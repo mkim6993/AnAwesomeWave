@@ -1,11 +1,8 @@
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
-
-# dependencies
-node_modules/
+# Expo-specific patterns
+# Root .gitignore handles common Node.js/JS patterns
 
 # Expo
 .expo/
-dist/
 web-build/
 expo-env.d.ts
 
@@ -17,30 +14,19 @@ expo-env.d.ts
 *.p12
 *.key
 *.mobileprovision
+*.pem
 
 # Metro
 .metro-health-check*
 
-# debug
-npm-debug.*
-yarn-debug.*
-yarn-error.*
-
-# macOS
-.DS_Store
-*.pem
-
 # local env files
 .env*.local
-
-# typescript
-*.tsbuildinfo
-
-example
 
 # generated native folders
 /ios
 /android
 
+# example folder (if this is a template artifact)
+example
+
 .claude
-.vscode
