@@ -1,5 +1,10 @@
 packages:
   - "apps/*"
   - "packages/*"
+
+allowBuilds:
+  esbuild: true
+  workerd: true
+
 minimumReleaseAgeExclude:
   - "@noxcturnal/noxcturnal-win32-x64-msvc@0.1.11"
