@@ -1,5 +1,20 @@
 # Developer Cheatsheet: Prisma + PostgreSQL + Fastify + pnpm
 
+## 📖 Table of Contents
+
+- [🚀 Most Common Daily Commands](#-most-common-daily-commands)
+- [📦 pnpm Workspace Commands](#-pnpm-workspace-commands)
+- [🐘 PostgreSQL & Docker Commands](#-postgresql--docker-commands)
+- [🔷 Prisma Workflow](#-prisma-workflow)
+- [🔄 Complete Schema Change Workflow](#-complete-schema-change-workflow)
+- [📝 Prisma Usage Patterns](#-prisma-usage-patterns)
+- [⚡ Fastify + Prisma Integration](#-fastify--prisma-integration)
+- [🔍 Debugging & Troubleshooting](#-debugging--troubleshooting)
+- [📚 Quick Reference Links](#-quick-reference-links)
+- [🎯 Environment Variables](#-environment-variables)
+
+---
+
 ## 🚀 Most Common Daily Commands
 
 ```bash
