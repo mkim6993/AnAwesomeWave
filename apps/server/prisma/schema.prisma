@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client"
+  output   = "./generated"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String        @id @default(cuid())
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  participants  Participant[]
+}
+
+enum PartyStatus {
+  SCHEDULED
+  LIVE
+  ENDED
+}
+
+model Party {
+  id           String        @id @default(cuid())
+  joinCode     String        @unique
+  status       PartyStatus   @default(SCHEDULED)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  participants Participant[]
+}
+
+enum ParticipantRole {
+  OPERATOR
+  GUEST
+}
+
+model Participant {
+  id        String          @id @default(cuid())
+  role      ParticipantRole @default(GUEST)
+  userId    String?
+  user      User?           @relation(fields: [userId], references: [id])
+  partyId   String
+  party     Party           @relation(fields: [partyId], references: [id])
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  @@index([userId])
+  @@index([partyId])
+}

@@ -1,7 +1,6 @@
 {
   "extends": "fastify-tsconfig",
   "compilerOptions": {
-    "rootDir": "src",
     "outDir": "dist",
     "sourceMap": true,
     "module": "preserve",
@@ -11,5 +10,5 @@
       "node"
     ]
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts", "prisma7.config.ts"]
 }
