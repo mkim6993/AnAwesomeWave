@@ -1,0 +1,10 @@
+# Build output
+dist/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Compiled files in source (shouldn't be here)
+src/**/*.js
+src/**/*.js.map
+src/**/*.d.ts

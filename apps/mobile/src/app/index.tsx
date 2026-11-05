@@ -11,6 +11,10 @@ export default function Index() {
         title='go to party'
         onPress={() => router.push('/party')}
       />
+      <Button
+        title='Endpoint tests'
+        onPress={() => router.push('/db')}
+      />
     </View>
   );
 }

@@ -8,3 +8,7 @@ export const PartySchema = z.object({
 });
 
 export type Party = z.infer<typeof PartySchema>;
+
+// Request body for POST /example/user
+export const CreateUserBodySchema = z.object({});
+export type CreateUserBody = z.infer<typeof CreateUserBodySchema>;
