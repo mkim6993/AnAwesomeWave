@@ -7,10 +7,14 @@ datasource db {
 }
 
 model User {
-  id            String        @id @default(cuid())
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  participants  Participant[]
+  id               String        @id @default(cuid())
+  username         String        @unique
+  displayname      String?
+  createdAt        DateTime      @default(now())
+
+  // back-relations
+  organizedParties Party[]       @relation("PartyOrganizer")
+  participations   Participant[]
 }
 
 enum PartyStatus {
@@ -21,10 +25,14 @@ enum PartyStatus {
 
 model Party {
   id           String        @id @default(cuid())
+  name         String
   joinCode     String        @unique
-  status       PartyStatus   @default(SCHEDULED)
+  status       PartyStatus   @default(LIVE)
+  organizerId  String
   createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  
+  // Relations
+  organizer    User          @relation("PartyOrganizer", fields: [organizerId], references: [id])
   participants Participant[]
 }
 
@@ -34,15 +42,22 @@ enum ParticipantRole {
 }
 
 model Participant {
-  id        String          @id @default(cuid())
-  role      ParticipantRole @default(GUEST)
-  userId    String?
-  user      User?           @relation(fields: [userId], references: [id])
-  partyId   String
-  party     Party           @relation(fields: [partyId], references: [id])
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
+  id         String          @id @default(cuid())
+  partyId    String
+  userId     String?
+  guestToken String?
+  role       ParticipantRole @default(GUEST)
+  joinedAt   DateTime        @default(now())
+  
+  // Relations
+  party      Party           @relation(fields: [partyId], references: [id], onDelete: Cascade)
+  user       User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
 
+  // Constraints
+  @@unique([partyId, userId])
+  @@unique([partyId, guestToken])
+  
+  // Indexes for common queries
   @@index([userId])
   @@index([partyId])
 }
