@@ -24,6 +24,10 @@ const partyRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> => 
             console.log('client disonnected from party');
         })
     })
+
+    fastify.post('/create', async (request, reply) => {
+
+    })
 }
 
 export default partyRoutes;

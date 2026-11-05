@@ -63,3 +63,11 @@ test/types/index.js
 
 # compiled app
 dist
+
+# turborepo cache
+.turbo
+
+.claude
+.cursor
+.devin
+.agents
