@@ -1,45 +1,49 @@
 import { type FastifyPluginAsync } from 'fastify';
+import { type ZodTypeProvider } from 'fastify-type-provider-zod';
 import {
   CreateUserSchema,
   type CreateUser,
 } from '@AnAwesomeWave/shared';
 
 const userRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
-  fastify.get<({ Params: { id: string } })>('/:id', async function (request, reply) {
-    const { id } = request.params
-    
-    const party = fastify.prisma.party.findUnique({
-      where: {
-        id
-      }
-    })
+  const server = fastify.withTypeProvider<ZodTypeProvider>();
 
-    return { success: true, party };
-  })
+  // GET /user/:id
+  server.get(
+    '/:id',
+    async (request, reply) => {
+      const { id } = request.params as { id: string }
+      
+      const user = await fastify.prisma.user.findUnique({
+        where: { id }
+      })
+
+      return { success: true, user };
+    }
+  )
 
   /**
    * Sign Up
    */
-  fastify.post<{ Body: CreateUser }>('/sign-up', async function (request, reply) {
-    const result = CreateUserSchema.safeParse(request.body)
-
-    if (!result.success) {
-      return reply.code(400).send({
-        success: false,
-        error: 'Validation failed',
-        details: result.error.format()
-      })
-    }
-
-    const user = await fastify.prisma.user.create({
-      data: {
-        username: result.data.username,
-        displayname: result.data.displayname || result.data.username,
+  server.post(
+    '/sign-up',
+    {
+      schema: {
+        body: CreateUserSchema
       }
-    })
+    }, async (request, reply) => {
+      const { username, displayname } = request.body as CreateUser;
 
-    return { success: true, user };
-  })
+      const user = await fastify.prisma.user.create({
+        data: {
+          username,
+          displayname: displayname || username,
+        }
+      })
+
+      return { success: true, user };
+    }
+  )
 };
 
 export default userRoutes;

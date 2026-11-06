@@ -10,7 +10,7 @@ const operatorRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> 
   fastify.get('/manual-mode', { websocket: true }, (socket, req) => {
     console.log('client connected to operator manual-mode websocket');
 
-    socket.on('message', (data) => {
+    socket.on('message', (data: { toString: () => string; }) => {
       const parsed: BaseEffect = JSON.parse(data.toString());
 
       if (
