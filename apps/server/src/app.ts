@@ -1,12 +1,11 @@
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import AutoLoad, { AutoloadPluginOptions } from '@fastify/autoload'
-import { FastifyPluginAsync, FastifyServerOptions, fastify } from 'fastify'
+import { FastifyPluginAsync, FastifyServerOptions } from 'fastify'
 import {
   serializerCompiler,
   validatorCompiler,
-  type ZodTypeProvider
-} from 'fastify-type-provider-zod'
+} from '@fastify/type-provider-zod'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
