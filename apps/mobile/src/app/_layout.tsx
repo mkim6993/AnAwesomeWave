@@ -6,19 +6,40 @@ export default function RootLayout() {
     <QueryProvider>
       <Stack 
         screenOptions={{
-          headerStyle: {
-            backgroundColor: "#f472b6",
-          },
-          headerTintColor: "#fff",
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
+          headerShown: false
         }}
       >
-          <Stack.Screen name="index" options={{ title: 'Home' }} />
-          <Stack.Screen name="party" options={{ title: 'Party' }} />
-          <Stack.Screen name='operator' options={{ title: 'Operator'}}  />
-        </Stack>
+        {/* Tab group - the main app experience */}
+        <Stack.Screen
+          name="(home)"
+          options={{ headerShown: false }}
+        />
+
+        {/* Modal-style screens that overlay tabs */}
+        <Stack.Screen
+          name="party/[id]"
+          options={{
+            presentation: 'card', // or 'modal' for slide-up effect
+            title: 'Party',
+          }}
+        />
+
+        <Stack.Screen
+          name="invite/[id]"
+          options={{
+            presentation: 'card',
+            title: 'Invite',
+          }}
+        />
+
+        <Stack.Screen
+          name="overview/[id]"
+          options={{
+            presentation: 'card',
+            title: 'Overview',
+          }}
+        />
+      </Stack>
     </QueryProvider>
   );
 }
