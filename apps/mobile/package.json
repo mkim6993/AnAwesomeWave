@@ -5,6 +5,7 @@
   "dependencies": {
     "@AnAwesomeWave/shared": "workspace:*",
     "@expo/ui": "~58.0.24",
+    "@expo/vector-icons": "^15.1.1",
     "@tanstack/react-query": "^5.105.0",
     "expo": "~58.0.16",
     "expo-constants": "~58.0.12",

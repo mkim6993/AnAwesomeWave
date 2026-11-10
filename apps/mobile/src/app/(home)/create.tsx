@@ -11,7 +11,13 @@ export default function CreateScreen() {
   const { height: screenHeight, width: screenWidth, scale, fontScale } = useWindowDimensions();
 
   const goToOverview = () => {
-    router.push('/overview/8329kc')
+    router.push({
+      pathname: '/overview/[id]',
+      params: { 
+        id: '8329kc',
+        partyName: 'Party Name'
+      }
+    })
   }
 
   const goToPreview = () => {
