@@ -17,7 +17,7 @@ export default function PartyScreen() {
   const [showSettings, setShowSettings] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
   const [copyButtonText, setCopyButtonText] = useState('COPY');
-  const [copyTimeout, setCopyTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [copyTimeout, setCopyTimeout] = useState<ReturnType<typeof setTimeout> | null>(null);
 
   const goToBoard = () => {
     router.replace('/');

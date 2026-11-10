@@ -6,6 +6,8 @@ interface TitleProps extends Omit<TextProps, 'style'> {
   variant?: 'h1' | 'h2' | 'h3';
   size?: number;
   color?: string;
+  paddingHorizontal?: number;
+  paddingVertical?: number;
 }
 
 const styles = {
@@ -32,6 +34,8 @@ const TitleText = ({
   variant = 'h2',
   size,
   color,
+  paddingHorizontal=0,
+  paddingVertical=0,
   ...textProps
 }: TitleProps) => {
   return (
@@ -41,6 +45,7 @@ const TitleText = ({
         styles[variant],
         size !== undefined && { fontSize: size },
         color !== undefined && { color },
+        { paddingHorizontal, paddingVertical }
       ]}
     >
       {children}
