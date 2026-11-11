@@ -1,6 +1,9 @@
 import { useRouter, router } from 'expo-router';
-import { Button, StyleSheet, Text, View, Image, useWindowDimensions, Pressable, Alert } from "react-native";
-import { useState } from 'react';
+import {
+  Button, StyleSheet, Text, View, Image, useWindowDimensions, 
+  Pressable, Alert, TextInput
+} from "react-native";
+import { useState, useEffect } from 'react';
 
 // components
 import TitleText from '@/components/ui/TitleText';
@@ -13,11 +16,14 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 // API
 import { useCreateParty } from '@/api/queries';
 
+// constants
+const placeholderColor = 'rgba(122, 122, 122, 0.6)';
+
 export default function CreateScreen() {
   // React Query mutation hook
   const createPartyMutation = useCreateParty();
-
-  const [partyName, setPartyName] = useState<string>('Sonic Youth');
+  const [partyName, setPartyName] = useState<string>('');
+  const [createAllowed, setCreateAllowed] = useState<boolean>(false);
 
   const handleCreateParty = async () => {
     const mockOrganizerId = 'cmwbfo5fx0001ydb60d11maix'; // Replace with real user ID
@@ -55,6 +61,37 @@ export default function CreateScreen() {
     })
   }
 
+  const startOver = () => {
+    console.log('startover')
+    Alert.alert(
+      'Start over?',
+      'This action cannot be undone.',
+      [
+        {
+          text: 'Start Over',
+          style: 'destructive',
+          onPress: () => setPartyName('')
+        },
+        {
+          text: 'Cancel',
+          style: 'cancel'
+        }
+      ]
+    )
+  }
+
+  useEffect(() => {
+    if (
+      createPartyMutation.isPending === false &&
+      partyName.length > 0
+    ) {
+      setCreateAllowed(true);
+    } else {
+      setCreateAllowed(false);
+    }
+
+  }, [createPartyMutation.isPending, partyName])
+
   return (
     <View style={styles.container}>
       {/* Name */}
@@ -64,9 +101,22 @@ export default function CreateScreen() {
         >
           Party Name:
         </TitleText>
-        <TitleText
+        <TextInput
+          placeholder='enter your party name'
+          placeholderTextColor={placeholderColor}
+          style={{
+            // backgroundColor: 'green',
+            fontSize: 32,
+            lineHeight: 40,
+            fontWeight: '700' as const,
+            letterSpacing: -0.5,
+          }}
+          value={partyName}
+          onChangeText={setPartyName}
+        />
+        {/* <TitleText
           variant='h1'
-        >Party Name</TitleText>
+        >Party Name</TitleText> */}
       </View>
 
       {/* Poster (add photo) */}
@@ -80,7 +130,7 @@ export default function CreateScreen() {
         onPress={() => alert('file system')}
       >
         <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-          <FontAwesome6 name="file-image" size={24} color="black" />
+          <FontAwesome6 name="file-image" size={24} color="gray" />
           <Text>
             add a poster
           </Text>
@@ -118,7 +168,7 @@ export default function CreateScreen() {
           textSizeVariant='h2'
           backgroundColor='#84FF32'
           onPress={handleCreateParty}
-          disabled={createPartyMutation.isPending}
+          disabled={!createAllowed}
         />
         <ComButton
           text='PREVIEW INVITE'
@@ -126,15 +176,15 @@ export default function CreateScreen() {
           textSizeVariant='h3'
           backgroundColor='#FF87DF'
           onPress={goToPreview}
-          disabled={createPartyMutation.isPending}
+          disabled={!createAllowed}
         />
         <ComButton
           text='start over'
           textColor='black'
           textSizeVariant='h3'
           hasContainer={false}
-          onPress={() => alert('clear')}
-          disabled={createPartyMutation.isPending}
+          onPress={startOver}
+          disabled={!createAllowed}
         />
       </View>
       <LoadingIsland
@@ -162,5 +212,6 @@ const styles = StyleSheet.create({
     width: '50%',
     maxWidth: 180,
     alignItems: 'flex-start',
+    borderColor: 'gray',
   }
 });

@@ -6,6 +6,8 @@ import { Feather, FontAwesome6 } from '@expo/vector-icons';
 // Components
 import TitleText from '@/components/ui/TitleText';
 import ComButton from '@/components/ui/ComButton';
+import OverlayContainer from '@/components/ui/OverlayContainer';
+import ShareSection from '@/components/ui/ShareSection';
 
 export default function PartyScreen() {
   const {
@@ -16,8 +18,6 @@ export default function PartyScreen() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
-  const [copyButtonText, setCopyButtonText] = useState('COPY');
-  const [copyTimeout, setCopyTimeout] = useState<ReturnType<typeof setTimeout> | null>(null);
 
   const goToBoard = () => {
     router.replace('/');
@@ -53,20 +53,7 @@ export default function PartyScreen() {
   }
 
   const handleCopyQR = () => {
-    // Clear any existing timeout to handle spam
-    if (copyTimeout) {
-      clearTimeout(copyTimeout);
-    }
-
     // TODO: Implement copy QR code
-    setCopyButtonText('COPIED!');
-    
-    // Reset text after 2 seconds
-    const timeout = setTimeout(() => {
-      setCopyButtonText('COPY');
-    }, 2000);
-    
-    setCopyTimeout(timeout);
   }
 
   const dismissSettings = () => {
@@ -154,62 +141,43 @@ export default function PartyScreen() {
       </View>
 
       {/* Settings Overlay */}
-      {showSettings && (
-        <View style={styles.settingsOverlay}>
-          <View style={styles.settingsContent}>
-            {/* Gear Icon */}
-            <View style={styles.settingsSection}>
-              <Feather name="settings" size={48} color="white" />
-            </View>
-
-            {/* QR Icon with Copy Button */}
-            <View style={styles.settingsSection}>
-              <FontAwesome6 name="qrcode" size={100} color="white" />
-              <View style={{ marginTop: 10 }}>
-                <ComButton
-                  text={copyButtonText}
-                  textColor='black'
-                  textSizeVariant='h3'
-                  backgroundColor='white'
-                  onPress={handleCopyQR}
-                />
-                <ComButton
-                  text='SHARE'
-                  textColor='black'
-                  textSizeVariant='h2'
-                  backgroundColor='#FF87DF'
-                  onPress={handleShare}
-                />
-              </View>
-            </View>
-
-            {/* Buttons */}
-            <View style={styles.settingsSection}>
-              <ComButton
-                text='LEAVE PARTY'
-                textColor='white'
-                textSizeVariant='h2'
-                backgroundColor='black'
-                onPress={handleLeaveParty}
-              />
-              <ComButton
-                text='RETURN HOME'
-                textColor='white'
-                textSizeVariant='h2'
-                backgroundColor='black'
-                onPress={handleLeaveParty}
-              />
-              <ComButton
-                text='dismiss'
-                textColor='white'
-                textSizeVariant='h3'
-                hasContainer={false}
-                onPress={dismissSettings}
-              />
-            </View>
-          </View>
+      <OverlayContainer visible={showSettings}>
+        {/* Gear Icon */}
+        <View style={styles.settingsSection}>
+          <Feather name="settings" size={48} color="white" />
         </View>
-      )}
+
+        {/* QR Icon with Copy and Share Buttons */}
+        <ShareSection
+          joinCode={'123'}
+          onShare={handleShare}
+        />
+
+        {/* Buttons */}
+        <View style={styles.settingsSection}>
+          <ComButton
+            text='LEAVE PARTY'
+            textColor='white'
+            textSizeVariant='h2'
+            backgroundColor='black'
+            onPress={handleLeaveParty}
+          />
+          <ComButton
+            text='RETURN HOME'
+            textColor='white'
+            textSizeVariant='h2'
+            backgroundColor='black'
+            onPress={handleLeaveParty}
+          />
+          <ComButton
+            text='dismiss'
+            textColor='white'
+            textSizeVariant='h3'
+            hasContainer={false}
+            onPress={dismissSettings}
+          />
+        </View>
+      </OverlayContainer>
     </View>
   );
 }
@@ -253,22 +221,6 @@ const styles = StyleSheet.create({
   },
   bottomGearButton: {
     padding: 10,
-  },
-  settingsOverlay: {
-    position: 'absolute',
-    top: '10%',
-    left: '5%',
-    right: '5%',
-    bottom: '10%',
-    backgroundColor: 'rgba(0, 0, 0, 0.65)',
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 100,
-  },
-  settingsContent: {
-    width: '85%',
-    alignItems: 'center',
   },
   settingsSection: {
     marginVertical: 20,

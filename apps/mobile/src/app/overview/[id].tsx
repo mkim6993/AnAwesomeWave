@@ -7,12 +7,17 @@ import { useFocusEffect } from 'expo-router';
 import TitleText from '@/components/ui/TitleText';
 import ComButton from '@/components/ui/ComButton';
 
+import OverlayContainer from '@/components/ui/OverlayContainer';
+import ShareSection from '@/components/ui/ShareSection';
+
 // api
 import { useParty } from '@/api/queries';
 
 export default function PartyOrganizerViewScreen() {
   const { id, partyName } = useLocalSearchParams<{ id: string; partyName?: string }>();
   const { width: screenWidth } = useWindowDimensions();
+
+  const [showShare, setShowShare] = useState<boolean>(false);
   // TODO: Replace with actual userId from auth context
   const userId = 'cmwbfo5fx0001ydb60d11maix';
 
@@ -42,6 +47,10 @@ export default function PartyOrganizerViewScreen() {
 
   const goToBoard = () => {
     router.replace('/')
+  }
+
+  const handleCopyQR = () => {
+    alert('handleCopyQR');
   }
 
   useFocusEffect(
@@ -91,7 +100,7 @@ export default function PartyOrganizerViewScreen() {
           textColor='black'
           textSizeVariant='h2'
           backgroundColor='#FF87DF'
-          onPress={handleShare}
+          onPress={() => setShowShare(true)}
         />
         <ComButton
           text='END PARTY'
@@ -101,13 +110,28 @@ export default function PartyOrganizerViewScreen() {
           onPress={handleEndParty}
         />
         <ComButton
-          text='GO HOME'
+          text='go home'
           textColor='black'
           textSizeVariant='h3'
           hasContainer={false}
           onPress={goToBoard}
         />
       </View>
+
+      {/* Share Overlay */}
+      <OverlayContainer visible={showShare} containerStyle={{ backgroundColor: 'rgba(0, 0, 0, 0.85)' }}>
+        <ShareSection
+          joinCode={partyData?.joinCode || ''}
+          onShare={handleShare}
+        />
+        <ComButton
+          text='dismiss'
+          textColor='white'
+          textSizeVariant='h3'
+          hasContainer={false}
+          onPress={() => setShowShare(false)}
+        />
+      </OverlayContainer>
     </View>
   );
 }

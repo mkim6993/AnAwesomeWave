@@ -6,6 +6,9 @@ import TitleText from '@/components/ui/TitleText';
 // helpers
 import { indexToSource } from '@/utils/images/sampleImages';
 
+// icons
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+
 // props
 interface PartyItemProps {
   onPress?: () => void;
@@ -14,6 +17,7 @@ interface PartyItemProps {
   backgroundColor?: string;
   sampleImageIndex?: number;
   imageOpacity?: number;
+  type?: 'GUEST' | 'OPERATOR'; 
 }
 const PartyItem = ({
   onPress=()=>alert('error'),
@@ -22,6 +26,7 @@ const PartyItem = ({
   backgroundColor='#84FF32',
   sampleImageIndex=1,
   imageOpacity=1,
+  type='GUEST'
 }: PartyItemProps) => {
   return (
     <Pressable
@@ -43,6 +48,22 @@ const PartyItem = ({
           opacity: imageOpacity,
         }}
       />
+      {type === 'OPERATOR' && (
+        <View style={styles.operatorOverlayContainer}>
+          <View style={{ height: '100%', justifyContent: 'space-between' }}>
+            <MaterialIcons name="construction" size={50} color={backgroundColor} />
+            <MaterialIcons name="construction" size={50} color={backgroundColor} />
+          </View>
+          <View style={{ height: '100%', justifyContent: 'space-between' }}>
+            <MaterialIcons name="construction" size={50} color={backgroundColor} />
+            <MaterialIcons name="construction" size={50} color={backgroundColor} />
+          </View>
+          <View style={{ height: '100%', justifyContent: 'space-between' }}>
+            <MaterialIcons name="construction" size={50} color={backgroundColor} />
+            <MaterialIcons name="construction" size={50} color={backgroundColor} />
+          </View>
+        </View>
+      )}
       <View style={[
         styles.title,
         { backgroundColor }
@@ -96,6 +117,15 @@ const styles = StyleSheet.create({
     right: 8,
     borderLeftWidth: 2,
     borderTopWidth: 2
+  },
+  operatorOverlayContainer: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    flexDirection: 'row',
+    padding: 10,
   }
 })
 

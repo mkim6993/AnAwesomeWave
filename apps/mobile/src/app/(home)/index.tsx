@@ -113,6 +113,7 @@ export default function BoardScreen() {
                   backgroundColor={'gray'}
                   sampleImageIndex={2}
                   imageOpacity={.5}
+                  type={'OPERATOR'}
                 />
               ))}
             </View>
