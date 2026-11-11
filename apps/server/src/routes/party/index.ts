@@ -20,6 +20,13 @@ const partyRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> => 
         where: { id }
       })
 
+      if (!party) {
+        return reply.code(404).send({
+          success: false,
+          error: 'Party not found'
+        })
+      }
+
       return { success: true, party };
     }
   )

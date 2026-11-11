@@ -1,13 +1,19 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { StyleSheet, View, Image, useWindowDimensions } from "react-native";
+import { useState } from 'react';
 
 // components
 import TitleText from '@/components/ui/TitleText';
 import ComButton from '@/components/ui/ComButton';
 
 export default function InviteScreen() {
-  const { id, partyName } = useLocalSearchParams<{ id: string; partyName?: string }>();
+  const {
+    id,
+    partyName,
+    isPreview
+  } = useLocalSearchParams<{ id: string; partyName?: string, isPreview?: string }>();
   const { width: screenWidth } = useWindowDimensions();
+  const previewMode = isPreview === 'true';
 
   const handleAccept = () => {
     // Navigate to party
@@ -25,8 +31,31 @@ export default function InviteScreen() {
     router.replace('/');
   }
 
+  const returnToCreate = () => {
+    router.canGoBack()
+      && previewMode
+      ? router.back()
+      : router.replace('/create');
+  }
+
   return (
     <View style={styles.container}>
+      {previewMode && (
+        <View
+          style={{
+            position: 'absolute',
+            top: 10,
+            left: 10,
+          }}
+        >
+          <ComButton
+            text='RETURN'
+            textSizeVariant='h3'
+            textColor='black'
+            onPress={returnToCreate}
+          />
+        </View>
+      )}
       <View style={styles.card}>
         {/* Party Name */}
         <View style={styles.formContainer}>
@@ -53,6 +82,7 @@ export default function InviteScreen() {
             textSizeVariant='h2'
             backgroundColor='#84FF32'
             onPress={handleAccept}
+            disabled={previewMode}
           />
           <ComButton
             text='DECLINE'
@@ -60,6 +90,7 @@ export default function InviteScreen() {
             textSizeVariant='h2'
             backgroundColor='#FF87DF'
             onPress={handleDecline}
+            disabled={previewMode}
           />
           <ComButton
             text='not now'
@@ -67,6 +98,7 @@ export default function InviteScreen() {
             textSizeVariant='h3'
             hasContainer={false}
             onPress={handleNotNow}
+            disabled={previewMode}
           />
         </View>
       </View>
@@ -85,7 +117,6 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: 'white',
-    borderRadius: 12,
     paddingVertical: 40,
     paddingHorizontal: 25,
     alignItems: 'center',

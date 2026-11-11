@@ -1,13 +1,29 @@
 import { useRouter, useLocalSearchParams, router } from 'expo-router';
 import { StyleSheet, View, Image, useWindowDimensions } from "react-native";
+import { useEffect, useState, useCallback } from 'react';
+import { useFocusEffect } from 'expo-router';
 
 // components
 import TitleText from '@/components/ui/TitleText';
 import ComButton from '@/components/ui/ComButton';
 
+// api
+import { useParty } from '@/api/queries';
+
 export default function PartyOrganizerViewScreen() {
   const { id, partyName } = useLocalSearchParams<{ id: string; partyName?: string }>();
   const { width: screenWidth } = useWindowDimensions();
+  // TODO: Replace with actual userId from auth context
+  const userId = 'cmwbfo5fx0001ydb60d11maix';
+
+  // Fetch user parties with React Query
+  const { 
+    data, 
+    isLoading, 
+    error, 
+    refetch,
+    isRefetching 
+  } = useParty(id);
 
   const goToControlBoard = () => {
     // TODO: Navigate to control board
@@ -28,6 +44,14 @@ export default function PartyOrganizerViewScreen() {
     router.replace('/')
   }
 
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch])
+  );
+
+  const partyData = data?.party;
+
   return (
     <View style={styles.container}>
       {/* Party Name */}
@@ -36,7 +60,7 @@ export default function PartyOrganizerViewScreen() {
           Party Name:
         </TitleText>
         <TitleText variant='h1'>
-          {partyName || 'Party Name'}
+          {partyData?.name}
         </TitleText>
       </View>
 

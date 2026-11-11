@@ -211,3 +211,11 @@ Reference these screens for implementation patterns:
 - Don't use colors outside the defined palette
 - Don't center-align containers unless specifically needed
 - Don't add extra complexity - keep it simple
+
+
+Colors for operator
+#DCDCDD
+#C5C3C6
+#46494C
+#4C5C68
+#1985A1

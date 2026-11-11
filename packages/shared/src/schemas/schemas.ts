@@ -21,7 +21,7 @@ export const UserSchema = z.object({
   id: z.string().cuid(),
   username: z.string(),
   displayname: z.string().nullable(),
-  createdAt: z.date(),
+  createdAt: z.coerce.date(),
 });
 export type User = z.infer<typeof UserSchema>;
 
@@ -34,7 +34,7 @@ export const PartySchema = z.object({
   joinCode: z.string(),
   status: PartyStatusSchema,
   organizerId: z.string().cuid(),
-  createdAt: z.date(),
+  createdAt: z.coerce.date(),
 });
 export type Party = z.infer<typeof PartySchema>;
 
@@ -47,7 +47,7 @@ export const ParticipantSchema = z.object({
   userId: z.string().cuid().nullable(),
   guestToken: z.string().nullable(),
   role: ParticipantRoleSchema,
-  joinedAt: z.date(),
+  joinedAt: z.coerce.date(),
 });
 export type Participant = z.infer<typeof ParticipantSchema>;
 
@@ -160,6 +160,58 @@ export const PaginatedResponseSchema = <T extends z.ZodTypeAny>(dataSchema: T) =
     data: z.array(dataSchema),
     pagination: PaginationSchema,
   });
+
+/**
+ * Party API Response Schemas
+ * These match what the server actually returns from /party endpoints
+ */
+export const GetPartyResponseSchema = z.object({
+  success: z.boolean(),
+  party: PartySchema.nullable(),
+});
+export type GetPartyResponse = z.infer<typeof GetPartyResponseSchema>;
+
+export const CreatePartyResponseSchema = z.object({
+  success: z.boolean(),
+  party: PartySchema,
+  participant: ParticipantSchema,
+});
+export type CreatePartyResponse = z.infer<typeof CreatePartyResponseSchema>;
+
+export const JoinPartyResponseSchema = z.object({
+  success: z.boolean(),
+  party: PartySchema,
+  participant: ParticipantSchema,
+});
+export type JoinPartyResponse = z.infer<typeof JoinPartyResponseSchema>;
+
+/**
+ * User Parties Response Schema
+ * Returns all parties a user is part of with role and organizer info
+ */
+export const UserPartyItemSchema = z.object({
+  id: z.string().cuid(),
+  name: z.string(),
+  status: PartyStatusSchema,
+  joinCode: z.string(),
+  createdAt: z.coerce.date(),
+  organizer: z.object({
+    id: z.string().cuid(),
+    username: z.string(),
+    displayname: z.string().nullable(),
+  }),
+  participantCount: z.number().int().nonnegative(),
+  userRole: ParticipantRoleSchema,
+  joinedAt: z.coerce.date(),
+  isOrganizer: z.boolean(),
+});
+export type UserPartyItem = z.infer<typeof UserPartyItemSchema>;
+
+export const GetUserPartiesResponseSchema = z.object({
+  success: z.boolean(),
+  parties: z.array(UserPartyItemSchema),
+});
+export type GetUserPartiesResponse = z.infer<typeof GetUserPartiesResponseSchema>;
 
 // ============================================================================
 // Backward Compatibility Exports
