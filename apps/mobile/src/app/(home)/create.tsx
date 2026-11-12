@@ -26,7 +26,8 @@ export default function CreateScreen() {
   const [createAllowed, setCreateAllowed] = useState<boolean>(false);
 
   const handleCreateParty = async () => {
-    const mockOrganizerId = 'cmwbfo5fx0001ydb60d11maix'; // Replace with real user ID
+    // const mockOrganizerId = 'cmwbfo5fx0001ydb60d11maix'; // Replace with real user ID
+    const mockOrganizerId = 'cmwcrr2nr0000vcb6yr1ds4f2';
     try {
       const result = await createPartyMutation.mutateAsync({
         name: partyName,
@@ -56,7 +57,8 @@ export default function CreateScreen() {
       pathname: '/invite/[id]',
       params: { 
         id: '38dk3',
-        isPreview: 'true'
+        isPreview: 'true',
+        partyName,
        }
     })
   }

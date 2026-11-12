@@ -1,5 +1,5 @@
 import { useRouter, useLocalSearchParams, router } from 'expo-router';
-import { StyleSheet, View, Pressable } from "react-native";
+import { StyleSheet, View, Pressable, useWindowDimensions } from "react-native";
 import { useState } from 'react';
 import { Feather, FontAwesome6 } from '@expo/vector-icons';
 
@@ -11,12 +11,14 @@ import TitleText from '@/components/ui/TitleText';
 import ComButton from '@/components/ui/ComButton';
 import OverlayContainer from '@/components/ui/OverlayContainer';
 import ShareSection from '@/components/ui/ShareSection';
+import Marquee from '@/components/ui/Marquee';
 
 export default function PartyScreen() {
   const {
     id,
     isPreview
   } = useLocalSearchParams<{ id: string; isPreview?: string }>();
+  const { width: screenWidth } = useWindowDimensions();
 
   const { data, isLoading, error, refetch } = useParty(id);
 
@@ -127,13 +129,30 @@ export default function PartyScreen() {
 
       {/* Bottom Overlay */}
       <View style={styles.bottomOverlay}>
-        <TitleText variant='h1' numberOfLines={1}>
+        {/* <TitleText variant='h1' numberOfLines={1}>
           {data?.party?.name}
-        </TitleText>
+        </TitleText> */}
+        <Marquee
+          texts={[
+            data?.party?.name || 'Party', 
+            `SHARE CODE: ${data?.party?.joinCode || '---'}`
+          ]}
+          fontSize={32}
+          color='black'
+          direction='left'
+          containerDimensions={{ width: screenWidth * .8, height: 50 }}
+          flowSpeed={100}
+          durationBetweenUnit={0}
+        />
         
         {/* Settings Button in Bottom Right */}
         <Pressable
-          style={styles.bottomGearButton}
+          style={[
+            styles.bottomGearButton,
+            {
+              width: screenWidth * .2
+            }
+          ]}
           onPress={handleSettings}
           disabled={isLocked}
         >
