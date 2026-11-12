@@ -6,11 +6,7 @@ export default function TabLayout() {
   // Use Liquid Glass Tabs on native, regular Tabs on web
   if (Platform.OS === 'web') {
     return (
-      <Tabs
-        // screenOptions={{
-        //   headerShown: false,
-        // }}
-      >
+      <Tabs>
         <Tabs.Screen
           name="index"
           options={{

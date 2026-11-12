@@ -4,7 +4,9 @@ import {
   CreatePartySchema,
   type CreateParty,
   JoinPartySchema,
-  type JoinParty
+  type JoinParty,
+  EndPartySchema,
+  type EndParty
 } from '@AnAwesomeWave/shared';
 
 const partyRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
@@ -181,6 +183,54 @@ const partyRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> => 
       return { success: true, party, participant };
     }
   )
+
+  /**
+   * End party
+   * - validate userId matches organizerId
+   * - delete party from database (cascade deletes participants)
+   */
+  server.delete(
+    '/end',
+    {
+      schema: {
+        body: EndPartySchema
+      }
+    },
+    async (request, reply) => {
+      const { partyId, userId } = request.body as EndParty;
+      console.log('/party/end', partyId, userId);
+
+      // First, find the party and verify the organizer
+      const party = await fastify.prisma.party.findUnique({
+        where: { id: partyId }
+      });
+
+      if (!party) {
+        return reply.code(404).send({
+          success: false,
+          error: 'Party not found'
+        });
+      }
+
+      // Check if the userId matches the organizerId
+      if (party.organizerId !== userId) {
+        return reply.code(403).send({
+          success: false,
+          error: 'Only the organizer can end the party'
+        });
+      }
+
+      // Delete the party (participants will be cascade deleted)
+      await fastify.prisma.party.delete({
+        where: { id: partyId }
+      });
+
+      return { 
+        success: true, 
+        message: 'Party ended successfully' 
+      };
+    }
+  );
 
   fastify.get(
     '/ws',

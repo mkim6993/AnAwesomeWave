@@ -3,23 +3,26 @@ import { StyleSheet, View, Image, useWindowDimensions } from "react-native";
 import { useEffect, useState, useCallback } from 'react';
 import { useFocusEffect } from 'expo-router';
 
+// auth
+import { useAuth } from '@/providers/AuthProvider';
+
 // components
 import TitleText from '@/components/ui/TitleText';
 import ComButton from '@/components/ui/ComButton';
+import LoadingIsland from '@/components/ui/LoadingIsland';
 
 import OverlayContainer from '@/components/ui/OverlayContainer';
 import ShareSection from '@/components/ui/ShareSection';
 
 // api
-import { useParty } from '@/api/queries';
+import { useParty, useEndParty } from '@/api/queries';
 
 export default function PartyOrganizerViewScreen() {
+  const { userId } = useAuth();
   const { id, partyName } = useLocalSearchParams<{ id: string; partyName?: string }>();
   const { width: screenWidth } = useWindowDimensions();
 
   const [showShare, setShowShare] = useState<boolean>(false);
-  // TODO: Replace with actual userId from auth context
-  const userId = 'cmwbfo5fx0001ydb60d11maix';
 
   // Fetch user parties with React Query
   const { 
@@ -29,6 +32,9 @@ export default function PartyOrganizerViewScreen() {
     refetch,
     isRefetching 
   } = useParty(id);
+
+  // End party mutation
+  const endPartyMutation = useEndParty();
 
   const goToControlBoard = () => {
     // TODO: Navigate to control board
@@ -41,8 +47,23 @@ export default function PartyOrganizerViewScreen() {
   }
 
   const handleEndParty = () => {
-    // TODO: Implement end party functionality
-    alert('End Party');
+    if (!userId) {
+      return;
+    }
+    
+    endPartyMutation.mutate(
+      { partyId: id, userId: userId },
+      {
+        onSuccess: () => {
+          // Navigate back to home after successfully ending the party
+          router.replace('/');
+        },
+        onError: (error) => {
+          // Show error message to user
+          alert(`Failed to end party: ${error.message}`);
+        }
+      }
+    );
   }
 
   const goToBoard = () => {
@@ -132,6 +153,9 @@ export default function PartyOrganizerViewScreen() {
           onPress={() => setShowShare(false)}
         />
       </OverlayContainer>
+
+      {/* Loading Island for End Party */}
+      <LoadingIsland visible={endPartyMutation.isPending} />
     </View>
   );
 }

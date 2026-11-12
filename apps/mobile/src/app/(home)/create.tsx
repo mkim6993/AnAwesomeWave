@@ -5,6 +5,9 @@ import {
 } from "react-native";
 import { useState, useEffect } from 'react';
 
+// auth
+import { useAuth } from '@/providers/AuthProvider';
+
 // components
 import TitleText from '@/components/ui/TitleText';
 import ComButton from '@/components/ui/ComButton';
@@ -20,18 +23,17 @@ import { useCreateParty } from '@/api/queries';
 const placeholderColor = 'rgba(122, 122, 122, 0.6)';
 
 export default function CreateScreen() {
+  const { userId } = useAuth();
   // React Query mutation hook
   const createPartyMutation = useCreateParty();
   const [partyName, setPartyName] = useState<string>('');
   const [createAllowed, setCreateAllowed] = useState<boolean>(false);
 
   const handleCreateParty = async () => {
-    // const mockOrganizerId = 'cmwbfo5fx0001ydb60d11maix'; // Replace with real user ID
-    const mockOrganizerId = 'cmwcrr2nr0000vcb6yr1ds4f2';
     try {
       const result = await createPartyMutation.mutateAsync({
         name: partyName,
-        organizerId: mockOrganizerId,
+        organizerId: userId,
         status: 'LIVE', // Optional
       });
 

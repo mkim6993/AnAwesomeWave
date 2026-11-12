@@ -4,12 +4,15 @@ import {
   JoinPartyResponseSchema,
   GetPartyResponseSchema,
   GetPartyByJoinCodeResponseSchema,
+  EndPartyResponseSchema,
   type CreateParty,
   type JoinParty,
+  type EndParty,
   type CreatePartyResponse,
   type JoinPartyResponse,
   type GetPartyResponse,
   type GetPartyByJoinCodeResponse,
+  type EndPartyResponse,
 } from '@AnAwesomeWave/shared';
 
 /**
@@ -52,4 +55,15 @@ export async function getPartyByJoinCode(
 ): Promise<GetPartyByJoinCodeResponse> {
   const response = await fetchApi<unknown>(`/party/by-join-code/${code}`);
   return GetPartyByJoinCodeResponseSchema.parse(response);
+}
+
+export async function endParty(
+  data: EndParty
+): Promise<EndPartyResponse> {
+  const response = await fetchApi<unknown>('/party/end', {
+    method: 'DELETE',
+    body: JSON.stringify(data),
+  });
+
+  return EndPartyResponseSchema.parse(response);
 }

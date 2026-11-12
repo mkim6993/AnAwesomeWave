@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { createParty, joinParty, getParty, getPartyByJoinCode } from '../services/party';
+import { createParty, joinParty, getParty, getPartyByJoinCode, endParty } from '../services/party';
 import { ApiError } from '../client';
-import type { CreateParty, JoinParty } from '@AnAwesomeWave/shared';
+import type { CreateParty, JoinParty, EndParty } from '@AnAwesomeWave/shared';
 
 /**
  * React Query hooks for Party operations
@@ -103,6 +103,27 @@ export function useJoinParty() {
         partyKeys.detail(response.party.id),
         response
       );
+    },
+  });
+}
+
+/**
+ * End a party (delete from database)
+ * Only the organizer can end the party
+ */
+export function useEndParty() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: EndParty) => endParty(data),
+    onSuccess: (response, variables) => {
+      // Invalidate all party queries to refresh lists
+      queryClient.invalidateQueries({ queryKey: partyKeys.all });
+      
+      // Remove the specific party from cache
+      queryClient.removeQueries({ 
+        queryKey: partyKeys.detail(variables.partyId) 
+      });
     },
   });
 }

@@ -2,6 +2,9 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { StyleSheet, View, Image, useWindowDimensions } from "react-native";
 import { useState } from 'react';
 
+// auth
+import { useAuth } from '@/providers/AuthProvider';
+
 // queries
 import { useJoinParty } from '@/api/queries';
 
@@ -11,10 +14,8 @@ import ComButton from '@/components/ui/ComButton';
 
 import LoadingIsland from '@/components/ui/LoadingIsland';
 
-// sample @TODO test delete this
-const userId = 'cmwcrr2nr0000vcb6yr1ds4f2';
-
 export default function InviteScreen() {
+  const { userId } = useAuth();
   const {
     id,
     partyName,

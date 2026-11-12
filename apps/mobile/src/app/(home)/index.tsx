@@ -3,6 +3,9 @@ import { Button, StyleSheet, Text, View, Image, ScrollView, RefreshControl } fro
 import { useState, useEffect, useCallback } from 'react';
 import { useFocusEffect } from 'expo-router';
 
+// auth
+import { useAuth } from '@/providers/AuthProvider';
+
 // API
 import { useUserParties } from '@/api/queries';
 
@@ -14,9 +17,7 @@ import PartyItem from '@/components/board/PartyItem';
 import InviteItem from '@/components/board/InviteItem';
 
 export default function BoardScreen() {
-  // TODO: Replace with actual userId from auth context
-  // const userId = 'cmwbfo5fx0001ydb60d11maix';
-  const userId = 'cmwcrr2nr0000vcb6yr1ds4f2';
+  const { userId } = useAuth();
 
   // Fetch user parties with React Query
   const { 
