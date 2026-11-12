@@ -3,6 +3,9 @@ import { StyleSheet, View, Pressable } from "react-native";
 import { useState } from 'react';
 import { Feather, FontAwesome6 } from '@expo/vector-icons';
 
+// Query
+import { useParty } from '@/api/queries/party';
+
 // Components
 import TitleText from '@/components/ui/TitleText';
 import ComButton from '@/components/ui/ComButton';
@@ -14,6 +17,8 @@ export default function PartyScreen() {
     id,
     isPreview
   } = useLocalSearchParams<{ id: string; isPreview?: string }>();
+
+  const { data, isLoading, error, refetch } = useParty(id);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -50,10 +55,6 @@ export default function PartyScreen() {
   const handleLeaveParty = () => {
     setShowSettings(false);
     goToBoard();
-  }
-
-  const handleCopyQR = () => {
-    // TODO: Implement copy QR code
   }
 
   const dismissSettings = () => {
@@ -126,8 +127,8 @@ export default function PartyScreen() {
 
       {/* Bottom Overlay */}
       <View style={styles.bottomOverlay}>
-        <TitleText variant='h1'>
-          Party {id}
+        <TitleText variant='h1' numberOfLines={1}>
+          {data?.party?.name}
         </TitleText>
         
         {/* Settings Button in Bottom Right */}
@@ -149,7 +150,7 @@ export default function PartyScreen() {
 
         {/* QR Icon with Copy and Share Buttons */}
         <ShareSection
-          joinCode={'123'}
+          joinCode={data?.party?.joinCode || 'err'}
           onShare={handleShare}
         />
 

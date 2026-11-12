@@ -11,7 +11,7 @@ interface LoadingIndicatorProps {
 
 const LoadingIsland = ({
   androidColor='white',
-  size='small',
+  size='large',
   visible=true,
 }: LoadingIndicatorProps) => {
   const { height, width } = useWindowDimensions();

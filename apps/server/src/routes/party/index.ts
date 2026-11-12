@@ -31,6 +31,24 @@ const partyRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> => 
     }
   )
 
+  server.get(
+    '/by-join-code/:code',
+    async (request, reply) => {
+      const { code } = request.params as { code: string }
+      const party = await fastify.prisma.party.findUnique({
+        where: { joinCode: code }
+      })
+
+      if (!party) {
+        return reply.code(404).send({
+          success: false,
+          error: 'Party not found'
+        })
+      }
+      return { success: true, party };
+    }
+  )
+
   /**
    * Create a party
    * - generate unique join code
@@ -95,7 +113,7 @@ const partyRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> => 
         body: JoinPartySchema
       }
     }, async (request, reply) => {
-      const { userId, guestToken, joinCode } = request.body as JoinParty;
+      const { userId, guestToken, partyId } = request.body as JoinParty;
 
       // Check if we're joining as a guest
       const isGuest = !userId;
@@ -108,14 +126,14 @@ const partyRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> => 
 
       /**
        * Join Party
-       * 1. Query Party via joinCode
+       * 1. Query Party via partyId
        * 2. Check if Participant already exists
        * 3. Insert new Participant
        */
       const { party, participant } = await fastify.prisma.$transaction(
         async (tx) => {
           const party = await tx.party.findUnique({
-            where: { joinCode }
+            where: { id: partyId }
           })
 
           if (!party) {

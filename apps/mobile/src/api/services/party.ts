@@ -3,11 +3,13 @@ import {
   CreatePartyResponseSchema,
   JoinPartyResponseSchema,
   GetPartyResponseSchema,
+  GetPartyByJoinCodeResponseSchema,
   type CreateParty,
   type JoinParty,
   type CreatePartyResponse,
   type JoinPartyResponse,
   type GetPartyResponse,
+  type GetPartyByJoinCodeResponse,
 } from '@AnAwesomeWave/shared';
 
 /**
@@ -43,4 +45,11 @@ export async function joinParty(
 export async function getParty(id: string): Promise<GetPartyResponse> {
   const response = await fetchApi<unknown>(`/party/${id}`);
   return GetPartyResponseSchema.parse(response);
+}
+
+export async function getPartyByJoinCode(
+  code: string
+): Promise<GetPartyByJoinCodeResponse> {
+  const response = await fetchApi<unknown>(`/party/by-join-code/${code}`);
+  return GetPartyByJoinCodeResponseSchema.parse(response);
 }

@@ -32,7 +32,9 @@ const LoadingIndicator = ({
           source={require('@/assets/gifs/dancer.gif')}
           // source={require('@/assets/gifs/bubble.gif')}
           style={[
-            sizes.large,
+            size == 'small' 
+              ? sizes.small
+              : sizes.large,
             {
               position: 'absolute',
               top: -15,

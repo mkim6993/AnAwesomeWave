@@ -19,6 +19,13 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
+          name='join'
+          options={{
+            title: 'Join',
+            tabBarIcon: ({ color }) => <span>👥</span>,
+          }}
+        />
+        <Tabs.Screen
           name="create"
           options={{
             title: 'Create',

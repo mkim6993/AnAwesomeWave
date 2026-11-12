@@ -2,25 +2,52 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { StyleSheet, View, Image, useWindowDimensions } from "react-native";
 import { useState } from 'react';
 
+// queries
+import { useJoinParty } from '@/api/queries';
+
 // components
 import TitleText from '@/components/ui/TitleText';
 import ComButton from '@/components/ui/ComButton';
+
+import LoadingIsland from '@/components/ui/LoadingIsland';
+
+// sample @TODO test delete this
+const userId = 'cmwcrr2nr0000vcb6yr1ds4f2';
 
 export default function InviteScreen() {
   const {
     id,
     partyName,
-    isPreview
-  } = useLocalSearchParams<{ id: string; partyName?: string, isPreview?: string }>();
+    isPreview,
+    fromCode
+  } = useLocalSearchParams<{
+    id: string,
+    partyName?: string,
+    isPreview?: string,
+    fromCode?: string,
+  }>();
+  const joinPartyMutation = useJoinParty();
   const { width: screenWidth } = useWindowDimensions();
   const previewMode = isPreview === 'true';
+  const showDecline = fromCode !== 'true';
 
-  const handleAccept = () => {
-    // Navigate to party
-    router.push({
-      pathname: '/party/[id]',
-      params: { id }
-    });
+  const handleAccept = async () => {
+    try {
+      const result = await joinPartyMutation.mutateAsync({
+        partyId: id,
+        userId: userId,
+      });
+      if (result.success) {
+        router.replace({
+          pathname: '/party/[id]',
+          params: {
+            id: result.party.id,
+          }
+        })
+      }
+    } catch (error) {
+      
+    }
   }
 
   const handleDecline = () => {
@@ -28,7 +55,7 @@ export default function InviteScreen() {
   }
 
   const handleNotNow = () => {
-    router.replace('/');
+    router.back();
   }
 
   const returnToCreate = () => {
@@ -40,6 +67,9 @@ export default function InviteScreen() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.loadingIslandContainer}>
+        <LoadingIsland visible={joinPartyMutation.isPending} />
+      </View>
       {previewMode && (
         <View
           style={{
@@ -82,16 +112,18 @@ export default function InviteScreen() {
             textSizeVariant='h2'
             backgroundColor='#84FF32'
             onPress={handleAccept}
-            disabled={previewMode}
+            disabled={previewMode || joinPartyMutation.isPending}
           />
-          <ComButton
-            text='DECLINE'
-            textColor='black'
-            textSizeVariant='h2'
-            backgroundColor='#FF87DF'
-            onPress={handleDecline}
-            disabled={previewMode}
-          />
+          {showDecline && (
+            <ComButton
+              text='DECLINE'
+              textColor='black'
+              textSizeVariant='h2'
+              backgroundColor='#FF87DF'
+              onPress={handleDecline}
+              disabled={previewMode || joinPartyMutation.isPending}
+            />
+          )}
           <ComButton
             text='not now'
             textColor='black'
@@ -133,5 +165,11 @@ const styles = StyleSheet.create({
   formContainer: {
     marginVertical: 15,
     alignItems: 'center',
+  },
+  loadingIslandContainer: {
+    // backgroundColor: 'green',
+    flex: 1,
+    position: 'absolute',
+    zIndex: 1
   }
 });

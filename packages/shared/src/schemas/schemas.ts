@@ -124,7 +124,8 @@ export type UpdateParticipant = z.infer<typeof UpdateParticipantSchema>;
 // ============================================================================
 
 export const JoinPartySchema = z.object({
-  joinCode: z.string(),
+  partyId:
+  z.string().cuid(),
   userId: z.string().cuid().optional(),
   guestToken: z.string().optional(),
 });
@@ -184,6 +185,12 @@ export const JoinPartyResponseSchema = z.object({
   participant: ParticipantSchema,
 });
 export type JoinPartyResponse = z.infer<typeof JoinPartyResponseSchema>;
+
+export const GetPartyByJoinCodeResponseSchema = z.object({
+  success: z.boolean(),
+  party: PartySchema.nullable(),
+});
+export type GetPartyByJoinCodeResponse = z.infer<typeof GetPartyByJoinCodeResponseSchema>;
 
 /**
  * User Parties Response Schema

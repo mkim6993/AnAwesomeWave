@@ -15,7 +15,8 @@ import InviteItem from '@/components/board/InviteItem';
 
 export default function BoardScreen() {
   // TODO: Replace with actual userId from auth context
-  const userId = 'cmwbfo5fx0001ydb60d11maix';
+  // const userId = 'cmwbfo5fx0001ydb60d11maix';
+  const userId = 'cmwcrr2nr0000vcb6yr1ds4f2';
 
   // Fetch user parties with React Query
   const { 
@@ -112,7 +113,7 @@ export default function BoardScreen() {
                   onPress={() => goToParty(party.id, true)}
                   backgroundColor={'gray'}
                   sampleImageIndex={2}
-                  imageOpacity={.5}
+                  imageOpacity={.8}
                   type={'OPERATOR'}
                 />
               ))}
