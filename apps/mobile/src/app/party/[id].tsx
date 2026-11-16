@@ -1,10 +1,11 @@
 import { useRouter, useLocalSearchParams, router } from 'expo-router';
-import { StyleSheet, View, Pressable, useWindowDimensions } from "react-native";
-import { useState } from 'react';
+import { StyleSheet, View, Pressable, useWindowDimensions, Button } from "react-native";
+import { useState, useEffect } from 'react';
 import { Feather, FontAwesome6 } from '@expo/vector-icons';
 
 // Query
 import { useParty } from '@/api/queries/party';
+import { usePartyWebSocket } from '@/hooks/useWebSocket';
 
 // Components
 import TitleText from '@/components/ui/TitleText';
@@ -12,6 +13,10 @@ import ComButton from '@/components/ui/ComButton';
 import OverlayContainer from '@/components/ui/OverlayContainer';
 import ShareSection from '@/components/ui/ShareSection';
 import Marquee from '@/components/ui/Marquee';
+
+import LoadingIsland from '@/components/ui/LoadingIsland';
+
+const partyWSURL = `ws://192.168.4.24:3000/party/ws`;
 
 export default function PartyScreen() {
   const {
@@ -21,6 +26,13 @@ export default function PartyScreen() {
   const { width: screenWidth } = useWindowDimensions();
 
   const { data, isLoading, error, refetch } = useParty(id);
+  const {
+    connect,
+    disconnect,
+    connected,
+    lastMessage,
+    sendMessage
+  } = usePartyWebSocket(partyWSURL);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -67,11 +79,57 @@ export default function PartyScreen() {
     setIsLocked(!isLocked);
   }
 
+  const wsConnect = () => {
+    sendMessage({
+      type: 'join',
+      partyId: '420-blaze',
+      userId: 'blooze-baloo-doo'
+    })
+  }
+
+  const sendEffect = () => {
+    sendMessage({
+      type: 'broadcast',
+      partyId: '420-blaze',
+      event: {
+        type: 'candlelight',
+        color: ['red', 'blue', 'green']
+      }
+    })
+  }
+
+  const killAll = () => {
+    sendMessage({
+      type: 'kill_all',
+      partyId: '420-blaze'
+    })
+  }
+
+  const printHelp = () => {
+    sendMessage({
+      type: 'print-stuff',
+    })
+  }
+
+  useEffect(() => {
+    connect();
+
+    return () => {
+      disconnect();
+    }
+  }, []);
+
+  if (isLoading) return (
+    <View style={styles.container}>
+      <LoadingIsland />
+    </View>
+  );
+
   return (
     <View style={styles.container}>
       <View
         style={{
-          backgroundColor: 'gray',
+          backgroundColor: 'green',
           flex: 1,
           width: '100%',
           justifyContent: 'center',
@@ -115,7 +173,12 @@ export default function PartyScreen() {
 
         {/* Center Play/Pause Button */}
         <Pressable
-          style={styles.playPauseButton}
+          style={[
+            styles.playPauseButton,
+            {
+              opacity: isPlaying ? .4 : 1
+            }
+          ]}
           onPress={togglePlayPause}
           disabled={isLocked}
         >
@@ -125,6 +188,24 @@ export default function PartyScreen() {
             color={isLocked ? '#666' : 'white'} 
           />
         </Pressable>
+        <View>
+          <Button
+            title='join'
+            onPress={wsConnect}
+          />
+          <Button
+            title='send effect'
+            onPress={sendEffect}
+          />
+          <Button
+            title='kill all'  
+            onPress={killAll}
+          />
+          <Button
+            title='help'
+            onPress={printHelp}
+          />
+        </View>
       </View>
 
       {/* Bottom Overlay */}
@@ -138,7 +219,7 @@ export default function PartyScreen() {
             `SHARE CODE: ${data?.party?.joinCode || '---'}`
           ]}
           fontSize={32}
-          color='black'
+          color='white'
           direction='left'
           containerDimensions={{ width: screenWidth * .8, height: 50 }}
           flowSpeed={100}
@@ -238,6 +319,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 10,
     paddingHorizontal: 10,
+    position: 'absolute',
+    bottom: 0,
   },
   bottomGearButton: {
     padding: 10,

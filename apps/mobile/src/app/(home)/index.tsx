@@ -11,6 +11,7 @@ import { useUserParties } from '@/api/queries';
 
 // components
 import LoadingIndicator from '@/components/ui/LoadingIndicator';
+import LoadingIsland from '@/components/ui/LoadingIsland';
 import TitleText from '@/components/ui/TitleText';
 
 import PartyItem from '@/components/board/PartyItem';
@@ -53,6 +54,7 @@ export default function BoardScreen() {
     return (
       <View style={[styles.container, styles.centered]}>
         <LoadingIndicator />
+        {/* <LoadingIsland/> */}
       </View>
     );
   }

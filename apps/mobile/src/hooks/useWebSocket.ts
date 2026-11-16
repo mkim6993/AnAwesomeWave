@@ -86,7 +86,7 @@ export const usePartyWebSocket = (url: string) => {
     }
   }
 
-  const sendMessage = (data: BaseEffect) => {
+  const sendMessage = (data: any) => {
     console.log('calling send message.\nws.current.readyState?', ws.current?.readyState, 'WebSocket.OPEN', WebSocket.OPEN);
     if (isConnected()) {
       ws.current!.send(JSON.stringify(data));

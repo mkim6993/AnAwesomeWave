@@ -47,7 +47,8 @@ export default function InviteScreen() {
         })
       }
     } catch (error) {
-      
+      console.error('Error in handleAccept()', error);
+      alert('Error in handleAccept()')
     }
   }
 

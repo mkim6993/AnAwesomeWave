@@ -8,9 +8,12 @@ import {
   EndPartySchema,
   type EndParty
 } from '@AnAwesomeWave/shared';
+import partyWebSocketRoutes from './websocket.js';
 
 const partyRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
   const server = fastify.withTypeProvider<ZodTypeProvider>();
+
+  await server.register(partyWebSocketRoutes);
 
   // GET /party/:id
   server.get(
@@ -231,25 +234,6 @@ const partyRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> => 
       };
     }
   );
-
-  fastify.get(
-    '/ws',
-    {
-      websocket: true
-    },
-    (socket, req) => {
-      console.log('client connected to party websocket');
-
-      socket.on('message', (data: { toString: () => string; }) => {
-        const message = JSON.parse(data.toString());
-        socket.send(JSON.stringify({ type: 'party-update', data: message }));
-      })
-
-      socket.on('close', () => {
-        console.log('client disonnected from party');
-      })
-    }
-  )
 }
 
 export default partyRoutes;

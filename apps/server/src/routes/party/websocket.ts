@@ -1,0 +1,41 @@
+import { type FastifyPluginAsync } from 'fastify';
+
+import { partyConnectionService } from '../../services/party/PartyConnectionService.js';
+
+const partyWebSocketRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
+  fastify.get(
+    '/ws',
+    {
+      websocket: true
+    },
+    (socket, req) => {
+      console.log('client connected to party websocket');
+
+      socket.on('message', (data: { toString: () => string; }) => {
+        console.log('received message:', data);
+        const message = JSON.parse(data.toString());
+
+        switch (message.type) {
+          case 'join':
+            partyConnectionService.addConnection(message.partyId, message.userId, socket);
+            break;
+          case 'broadcast':
+            partyConnectionService.broadcastToParty(message.partyId, message.event);
+            break;
+          case 'kill_all':
+            partyConnectionService.killAllPartyConnections(message.partyId);
+            break;
+          case 'print-stuff':
+            partyConnectionService.printEverything();
+            break;
+        }
+      });
+
+      socket.on('close', () => {
+        console.log('client disonnected from party');
+      })
+    }
+  )
+}
+
+export default partyWebSocketRoutes;
