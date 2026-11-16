@@ -35,10 +35,10 @@ export default function RootLayout() {
           />
 
           <Stack.Screen
-            name="overview/[id]"
+            name="organizaer/[id]"
             options={{
               presentation: 'card',
-              title: 'Overview',
+              title: 'Organizer',
             }}
           />
         </Stack>

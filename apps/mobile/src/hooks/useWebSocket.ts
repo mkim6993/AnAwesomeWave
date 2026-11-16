@@ -4,12 +4,12 @@ import { useEffect, useRef, useState } from 'react';
 // const WS_URL = 'ws://127.0.0.1:3000/party/ws';
 
 export const usePartyWebSocket = (
-  url: string,
+  url: string | undefined,
   partyId: string,
   userId: string,
 ) => {
   const [connected, setConnected] = useState(false);
-  const [lastMessage, setLastMessage] = useState<any>(null);
+  const [lastLightEvent, setLastLightEvent] = useState<any>(null);
   const ws = useRef<WebSocket | null>(null);
 
   const isConnected = (): boolean => {
@@ -56,8 +56,11 @@ export const usePartyWebSocket = (
       // Called when a message is received from the server
       ws.current.onmessage = (event) => {
         const message = JSON.parse(event.data);
+        console.log('onmessage:', message);
 
-        if (message.type === 'register-response') {
+        if (message.type == 'light-event') {
+          setLastLightEvent(message.data);
+        } else if (message.type == 'register-response') {
           if (!message.success) {
             console.log('Registration failed, retrying');
             setTimeout(() => {
@@ -112,6 +115,7 @@ export const usePartyWebSocket = (
 
   const sendMessage = (data: any) => {
     console.log('calling send message.\nws.current.readyState?', ws.current?.readyState, 'WebSocket.OPEN', WebSocket.OPEN);
+    console.log(isConnected() ? 'sending now' : 'not connected FAILED')
     if (isConnected()) {
       ws.current!.send(JSON.stringify(data));
     }
@@ -130,6 +134,6 @@ export const usePartyWebSocket = (
     isConnected,
     sendMessage,
     connected,
-    lastMessage,
+    lastLightEvent,
   };
 }

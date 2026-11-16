@@ -36,7 +36,7 @@ export default function BoardScreen() {
   );
 
   const goToParty = (partyId: string, isOrganizer: boolean) => {
-    router.push(`/${isOrganizer ? 'overview' : 'party'}/${partyId}`)
+    router.push(`/${isOrganizer ? 'organizer' : 'party'}/${partyId}`)
   }
 
   const goToInvite = (id: string) => {

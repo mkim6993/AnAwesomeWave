@@ -39,7 +39,7 @@ export default function CreateScreen() {
 
       // Navigate to overview on success
       router.push({
-        pathname: '/overview/[id]',
+        pathname: '/organizer/[id]',
         params: { 
           id: result.party.id,
           partyName: result.party.name,

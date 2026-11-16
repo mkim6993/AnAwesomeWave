@@ -25,9 +25,13 @@ export class PartyConnectionService {
   }
 
   broadcastToParty(partyId: string, event: any) {
+    console.log('broadcasting To party yo:', event)
     const partyConnections = this.connections.get(partyId);
     if (partyConnections) {
-      const message = JSON.stringify(event);
+      const message = JSON.stringify({
+        type: 'light-event',
+        data: event,
+      });
       partyConnections.forEach(socket => {
         if (socket.readyState === 1) { // WebSocket.OPEN
           socket.send(message);

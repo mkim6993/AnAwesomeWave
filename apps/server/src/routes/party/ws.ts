@@ -12,8 +12,8 @@ const partyWebSocketRoutes: FastifyPluginAsync = async (fastify, opts): Promise<
       console.log('client connected to party websocket');
 
       socket.on('message', (data: { toString: () => string; }) => {
-        console.log('received message:', data);
         const message = JSON.parse(data.toString());
+        console.log('new message, message.type:', message.type);
 
         switch (message.type) {
           case 'register':

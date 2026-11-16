@@ -19,7 +19,7 @@ import { useParty, useEndParty } from '@/api/queries';
 
 export default function PartyOrganizerViewScreen() {
   const { userId } = useAuth();
-  const { id, partyName } = useLocalSearchParams<{ id: string; partyName?: string }>();
+  const { id } = useLocalSearchParams<{ id: string; partyName?: string }>();
   const { width: screenWidth } = useWindowDimensions();
 
   const [showShare, setShowShare] = useState<boolean>(false);
@@ -36,9 +36,14 @@ export default function PartyOrganizerViewScreen() {
   // End party mutation
   const endPartyMutation = useEndParty();
 
-  const goToControlBoard = () => {
-    // TODO: Navigate to control board
-    alert('Navigate to Control Board');
+  const goToController = () => {
+    router.push({
+      pathname: `/organizer/[id]/lightController`,
+      params: {
+        id,
+        partyName: partyData?.name || 'Party',
+      }
+    });
   }
 
   const handleShare = () => {
@@ -114,7 +119,7 @@ export default function PartyOrganizerViewScreen() {
           textColor='black'
           textSizeVariant='h2'
           backgroundColor='#84FF32'
-          onPress={goToControlBoard}
+          onPress={goToController}
         />
         <ComButton
           text='SHARE INVITE'

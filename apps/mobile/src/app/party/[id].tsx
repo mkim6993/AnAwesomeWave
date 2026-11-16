@@ -17,7 +17,7 @@ import Marquee from '@/components/ui/Marquee';
 
 import LoadingIsland from '@/components/ui/LoadingIsland';
 
-const partyWSURL = `ws://192.168.4.24:3000/party/ws`;
+const partyWSURL = process.env.EXPO_PUBLIC_WS_URL;
 
 export default function PartyScreen() {
   const { userId } = useAuth();
@@ -32,12 +32,14 @@ export default function PartyScreen() {
     connect,
     disconnect,
     isConnected,
-    sendMessage
+    sendMessage,
+    lastLightEvent,
   } = usePartyWebSocket(partyWSURL, id, userId);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
+  const [backdrop, setBackdrop] = useState('gray');
 
   const goToBoard = () => {
     router.replace('/');
@@ -80,51 +82,34 @@ export default function PartyScreen() {
     setIsLocked(!isLocked);
   }
 
-  const wsConnect = () => {
-    console.log('id:', id);
-    console.log('userId:', userId)
-    // sendMessage({
-    //   type: 'join',
-    //   partyId: '420-blaze',
-    //   userId: 'blooze-baloo-doo'
-    // })
-  }
-
-  const sendEffect = () => {
-    sendMessage({
-      type: 'broadcast',
-      partyId: '420-blaze',
-      event: {
-        type: 'candlelight',
-        color: ['red', 'blue', 'green']
-      }
-    })
-  }
-
-  const killAll = () => {
-    sendMessage({
-      type: 'kill_all',
-      partyId: '420-blaze'
-    })
-  }
-
   const printHelp = () => {
     sendMessage({
       type: 'print-stuff',
     })
   }
 
-  const joinParty = async () => {
-    sendMessage({
-      type: 'join',
-      partyId: id,
-      userId: userId,
-    });
-  }
+  useEffect(() => {
+    if (!isPlaying) {
+      setBackdrop('gray');
+      return;
+    }
+
+    if (lastLightEvent) {
+      if (lastLightEvent.group == 'solid') {
+        setBackdrop(lastLightEvent.name);
+      } else if (lastLightEvent.group == 'group' && lastLightEvent.name == 'twinkle') {
+        setBackdrop('black')
+      } else if (lastLightEvent.group == 'individual' && lastLightEvent.name == 'rainbow') {
+        // @TODO
+      } else if (lastLightEvent.group == 'operator' && lastLightEvent.name == 'clear') {
+        setBackdrop('gray')
+      }
+    }
+  }, [lastLightEvent, isPlaying])
 
   useEffect(() => {
+    if (isPreview == 'true') return;
     connect();
-
     return () => {
       disconnect();
     }
@@ -140,7 +125,7 @@ export default function PartyScreen() {
     <View style={styles.container}>
       <View
         style={{
-          backgroundColor: 'green',
+          backgroundColor: backdrop,
           flex: 1,
           width: '100%',
           justifyContent: 'center',
@@ -163,7 +148,6 @@ export default function PartyScreen() {
             />
           </View>
         )}
-        
         {/* Top Center Lock Button */}
         <View style={[styles.lockButton]}>
           <Pressable
@@ -199,28 +183,23 @@ export default function PartyScreen() {
             color={isLocked ? '#666' : 'white'} 
           />
         </Pressable>
-        <View>
-          <Button
-            title='join'
-            onPress={wsConnect}
-          />
-          <Button
-            title='send effect'
-            onPress={sendEffect}
-          />
-          <Button
-            title='kill all'  
-            onPress={killAll}
-          />
+        {/* <View>
           <Button
             title='help'
             onPress={printHelp}
           />
-        </View>
+        </View> */}
       </View>
 
       {/* Bottom Overlay */}
-      <View style={styles.bottomOverlay}>
+      <View
+        style={[
+          styles.bottomOverlay,
+          {
+            backgroundColor: isPlaying ? 'rgba(0, 0, 0, 0.1)' : 'rgba(0, 0, 0, 0.55)',
+          }
+        ]}
+      >
         {/* <TitleText variant='h1' numberOfLines={1}>
           {data?.party?.name}
         </TitleText> */}
@@ -230,7 +209,7 @@ export default function PartyScreen() {
             `SHARE CODE: ${data?.party?.joinCode || '---'}`
           ]}
           fontSize={32}
-          color='white'
+          color={isPlaying ? 'rgba(0, 0, 0, 0.4)' : 'white'}
           direction='left'
           containerDimensions={{ width: screenWidth * .8, height: 50 }}
           flowSpeed={100}
@@ -323,7 +302,6 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   bottomOverlay: {
-    backgroundColor: 'rgba(0, 0, 0, 0.55)',
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
