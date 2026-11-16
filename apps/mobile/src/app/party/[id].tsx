@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Feather, FontAwesome6 } from '@expo/vector-icons';
 
 // Query
+import { useAuth } from '@/providers/AuthProvider';
 import { useParty } from '@/api/queries/party';
 import { usePartyWebSocket } from '@/hooks/useWebSocket';
 
@@ -19,6 +20,7 @@ import LoadingIsland from '@/components/ui/LoadingIsland';
 const partyWSURL = `ws://192.168.4.24:3000/party/ws`;
 
 export default function PartyScreen() {
+  const { userId } = useAuth();
   const {
     id,
     isPreview
@@ -29,10 +31,9 @@ export default function PartyScreen() {
   const {
     connect,
     disconnect,
-    connected,
-    lastMessage,
+    isConnected,
     sendMessage
-  } = usePartyWebSocket(partyWSURL);
+  } = usePartyWebSocket(partyWSURL, id, userId);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -80,11 +81,13 @@ export default function PartyScreen() {
   }
 
   const wsConnect = () => {
-    sendMessage({
-      type: 'join',
-      partyId: '420-blaze',
-      userId: 'blooze-baloo-doo'
-    })
+    console.log('id:', id);
+    console.log('userId:', userId)
+    // sendMessage({
+    //   type: 'join',
+    //   partyId: '420-blaze',
+    //   userId: 'blooze-baloo-doo'
+    // })
   }
 
   const sendEffect = () => {
@@ -109,6 +112,14 @@ export default function PartyScreen() {
     sendMessage({
       type: 'print-stuff',
     })
+  }
+
+  const joinParty = async () => {
+    sendMessage({
+      type: 'join',
+      partyId: id,
+      userId: userId,
+    });
   }
 
   useEffect(() => {

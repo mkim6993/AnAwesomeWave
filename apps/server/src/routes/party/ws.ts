@@ -16,8 +16,13 @@ const partyWebSocketRoutes: FastifyPluginAsync = async (fastify, opts): Promise<
         const message = JSON.parse(data.toString());
 
         switch (message.type) {
-          case 'join':
-            partyConnectionService.addConnection(message.partyId, message.userId, socket);
+          case 'register':
+            const success = partyConnectionService.registerConnection(message.partyId, message.userId, socket);
+            socket.send(JSON.stringify({
+              type: 'register-response',
+              partyId: message.partyId,
+              success
+            }));
             break;
           case 'broadcast':
             partyConnectionService.broadcastToParty(message.partyId, message.event);
@@ -33,6 +38,7 @@ const partyWebSocketRoutes: FastifyPluginAsync = async (fastify, opts): Promise<
 
       socket.on('close', () => {
         console.log('client disonnected from party');
+        partyConnectionService.removeConnection(socket);
       })
     }
   )

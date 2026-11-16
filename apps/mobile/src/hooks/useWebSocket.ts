@@ -3,7 +3,11 @@ import { useEffect, useRef, useState } from 'react';
 
 // const WS_URL = 'ws://127.0.0.1:3000/party/ws';
 
-export const usePartyWebSocket = (url: string) => {
+export const usePartyWebSocket = (
+  url: string,
+  partyId: string,
+  userId: string,
+) => {
   const [connected, setConnected] = useState(false);
   const [lastMessage, setLastMessage] = useState<any>(null);
   const ws = useRef<WebSocket | null>(null);
@@ -41,12 +45,32 @@ export const usePartyWebSocket = (url: string) => {
       ws.current.onopen = () => {
         console.log('WebSocket connected');
         setConnected(true);
+
+        sendMessage({
+          type: 'register',
+          partyId,
+          userId,
+        })
       };
 
       // Called when a message is received from the server
       ws.current.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        setLastMessage(data);
+        const message = JSON.parse(event.data);
+
+        if (message.type === 'register-response') {
+          if (!message.success) {
+            console.log('Registration failed, retrying');
+            setTimeout(() => {
+              sendMessage({
+                type: 'register',
+                partyId,
+                userId,
+              })
+            }, 3000);
+          } else {
+            console.log('Registration success!')
+          }
+        }
       };
 
       // Called when an error occurs

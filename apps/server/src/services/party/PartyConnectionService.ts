@@ -11,12 +11,17 @@ export class PartyConnectionService {
    */
   private connectionToProfile = new Map<WebSocket, { partyId: string, userId: string }>();
 
-  addConnection(partyId: string, userId: string, socket: WebSocket) {
-    if (!this.connections.has(partyId)) {
-      this.connections.set(partyId, new Set<WebSocket>());
+  registerConnection(partyId: string, userId: string, socket: WebSocket) {
+    try {
+     if (!this.connections.has(partyId)) {
+        this.connections.set(partyId, new Set<WebSocket>());
+      }
+      this.connections.get(partyId)!.add(socket);
+      this.connectionToProfile.set(socket, { partyId, userId });
+      return true; 
+    } catch (error) {
+      return false;
     }
-    this.connections.get(partyId)!.add(socket);
-    this.connectionToProfile.set(socket, { partyId, userId });
   }
 
   broadcastToParty(partyId: string, event: any) {
