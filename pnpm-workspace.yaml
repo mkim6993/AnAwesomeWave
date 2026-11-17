@@ -1,6 +1,6 @@
 packages:
-  - "apps/*"
-  - "packages/*"
+  - 'apps/*'
+  - 'packages/*'
 
 allowBuilds:
   '@prisma/engines': true
@@ -9,4 +9,4 @@ allowBuilds:
   workerd: true
 
 minimumReleaseAgeExclude:
-  - "@noxcturnal/noxcturnal-win32-x64-msvc@0.1.11"
+  - '@noxcturnal/noxcturnal-win32-x64-msvc@0.1.11'

@@ -1,13 +1,13 @@
-import { useEffect, useRef, useState } from 'react'
-import { View, StyleSheet } from 'react-native'
+import { useEffect, useRef, useState } from 'react';
+import { View, StyleSheet } from 'react-native';
 
 interface RainbowPreviewProps {
-  durationPerColor?: number // Duration in milliseconds for each color
+  durationPerColor?: number; // Duration in milliseconds for each color
 }
 
 const RainbowPreview = ({ durationPerColor = 500 }: RainbowPreviewProps) => {
-  const [currentColorIndex, setCurrentColorIndex] = useState(0)
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const [currentColorIndex, setCurrentColorIndex] = useState(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Neon rainbow colors
   const rainbowColors = [
@@ -19,20 +19,20 @@ const RainbowPreview = ({ durationPerColor = 500 }: RainbowPreviewProps) => {
     '#00FFFF', // Neon Cyan
     '#0080FF', // Neon Blue
     '#8000FF', // Neon Purple
-  ]
+  ];
 
   useEffect(() => {
     // Cycle through colors
     intervalRef.current = setInterval(() => {
-      setCurrentColorIndex((prevIndex) => (prevIndex + 1) % rainbowColors.length)
-    }, durationPerColor)
+      setCurrentColorIndex((prevIndex) => (prevIndex + 1) % rainbowColors.length);
+    }, durationPerColor);
 
     return () => {
       if (intervalRef.current) {
-        clearInterval(intervalRef.current)
+        clearInterval(intervalRef.current);
       }
-    }
-  }, [durationPerColor, rainbowColors.length])
+    };
+  }, [durationPerColor, rainbowColors.length]);
 
   return (
     <View
@@ -43,14 +43,14 @@ const RainbowPreview = ({ durationPerColor = 500 }: RainbowPreviewProps) => {
         },
       ]}
     />
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     width: '100%',
     height: '100%',
   },
-})
+});
 
-export default RainbowPreview
+export default RainbowPreview;

@@ -5,7 +5,7 @@ import type { CreateParty, JoinParty, EndParty } from '@AnAwesomeWave/shared';
 
 /**
  * React Query hooks for Party operations
- * 
+ *
  * These wrap the service functions with React Query for:
  * - Automatic caching
  * - Loading/error states
@@ -79,12 +79,9 @@ export function useCreateParty() {
     onSuccess: (response) => {
       // Invalidate and refetch relevant queries
       queryClient.invalidateQueries({ queryKey: partyKeys.all });
-      
+
       // Optionally set the cache for the new party
-      queryClient.setQueryData(
-        partyKeys.detail(response.party.id),
-        response
-      );
+      queryClient.setQueryData(partyKeys.detail(response.party.id), response);
     },
   });
 }
@@ -99,10 +96,7 @@ export function useJoinParty() {
     mutationFn: (data: JoinParty) => joinParty(data),
     onSuccess: (response) => {
       // Update cache with the joined party
-      queryClient.setQueryData(
-        partyKeys.detail(response.party.id),
-        response
-      );
+      queryClient.setQueryData(partyKeys.detail(response.party.id), response);
     },
   });
 }
@@ -119,10 +113,10 @@ export function useEndParty() {
     onSuccess: (response, variables) => {
       // Invalidate all party queries to refresh lists
       queryClient.invalidateQueries({ queryKey: partyKeys.all });
-      
+
       // Remove the specific party from cache
-      queryClient.removeQueries({ 
-        queryKey: partyKeys.detail(variables.partyId) 
+      queryClient.removeQueries({
+        queryKey: partyKeys.detail(variables.partyId),
       });
     },
   });

@@ -8,7 +8,7 @@ import { View, FlatList, Text } from 'react-native';
 
 export default function HomeScreen() {
   const userId = 'your-user-id'; // Get this from your auth context
-  
+
   const { data, isLoading, error, refetch } = useUserParties(userId);
 
   if (isLoading) {
@@ -65,12 +65,7 @@ export default function HomeScreen() {
 
   if (isLoading) return <LoadingIsland />;
 
-  return (
-    <FlatList
-      data={data?.parties}
-      renderItem={({ item }) => <PartyCard party={item} />}
-    />
-  );
+  return <FlatList data={data?.parties} renderItem={({ item }) => <PartyCard party={item} />} />;
 }
 ```
 
@@ -99,12 +94,12 @@ export default function HomeScreen() {
 
 ```tsx
 const {
-  data,           // The response data
-  isLoading,      // Initial loading state
-  isFetching,     // Background refetch state
-  error,          // Error object if fetch failed
-  refetch,        // Manual refetch function
-  isError,        // Boolean error state
+  data, // The response data
+  isLoading, // Initial loading state
+  isFetching, // Background refetch state
+  error, // Error object if fetch failed
+  refetch, // Manual refetch function
+  isError, // Boolean error state
 } = useUserParties(userId);
 
 // Cached automatically for 2 minutes

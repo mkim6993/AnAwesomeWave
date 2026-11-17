@@ -19,14 +19,16 @@ api/
 ## 🎯 Design Principles
 
 ### 1. **Separation of Concerns**
+
 - `client.ts` - Low-level HTTP configuration
 - `services/` - Business logic for API calls (no React dependencies)
 - `queries/` - React Query hooks for state management
 - `types.ts` - Runtime validation and TypeScript types
 
 ### 2. **Type Safety Chain**
+
 ```
-Backend (Fastify + Zod) 
+Backend (Fastify + Zod)
   → Shared Schemas (@AnAwesomeWave/shared)
     → API Response Types (types.ts)
       → Service Functions (services/)
@@ -35,6 +37,7 @@ Backend (Fastify + Zod)
 ```
 
 ### 3. **Testability**
+
 - Services can be unit tested without React
 - Mocking is straightforward at any layer
 - Zod validates responses at runtime
@@ -49,10 +52,10 @@ import { useCreateParty, useParty } from '@/api/queries';
 function MyComponent() {
   // Query (GET)
   const { data, isLoading, error } = useParty('party-id');
-  
+
   // Mutation (POST/PUT/DELETE)
   const createPartyMutation = useCreateParty();
-  
+
   const handleCreate = async () => {
     try {
       const result = await createPartyMutation.mutateAsync({
@@ -64,17 +67,14 @@ function MyComponent() {
       console.error('Failed:', error);
     }
   };
-  
+
   return (
     <View>
       {isLoading && <Text>Loading...</Text>}
       {error && <Text>Error: {error.message}</Text>}
       {data && <Text>{data.party?.name}</Text>}
-      
-      <Button 
-        onPress={handleCreate}
-        disabled={createPartyMutation.isPending}
-      />
+
+      <Button onPress={handleCreate} disabled={createPartyMutation.isPending} />
     </View>
   );
 }
@@ -140,6 +140,7 @@ export * from './party';
 ## 🎨 Best Practices
 
 ### Query Keys
+
 - Centralize query keys in each query file
 - Use hierarchical structure for related data
 - Example:
@@ -154,16 +155,19 @@ export * from './party';
   ```
 
 ### Error Handling
+
 - Let Zod throw parsing errors (React Query will catch them)
 - Services should throw errors, not return them
 - Handle errors in components with try-catch or React Query's error state
 
 ### Cache Management
+
 - Use `invalidateQueries` for refetching stale data
 - Use `setQueryData` for optimistic updates
 - Configure `staleTime` and `gcTime` per query based on data freshness needs
 
 ### Mutations
+
 - Always return the created/updated resource from the API
 - Use `onSuccess` for cache invalidation
 - Use `onError` for rollback in optimistic updates
@@ -171,6 +175,7 @@ export * from './party';
 ## 🚫 Common Pitfalls
 
 ### ❌ Don't: Mix concerns
+
 ```ts
 // Bad: React Query in service
 export async function createParty(data: CreateParty) {
@@ -180,6 +185,7 @@ export async function createParty(data: CreateParty) {
 ```
 
 ### ✅ Do: Keep services pure
+
 ```ts
 // Good: Pure function
 export async function createParty(data: CreateParty): Promise<CreatePartyResponse> {
@@ -192,6 +198,7 @@ export async function createParty(data: CreateParty): Promise<CreatePartyRespons
 ```
 
 ### ❌ Don't: Skip validation
+
 ```ts
 // Bad: No runtime validation
 export async function createParty(data: CreateParty) {
@@ -203,6 +210,7 @@ export async function createParty(data: CreateParty) {
 ```
 
 ### ✅ Do: Always validate with Zod
+
 ```ts
 // Good: Runtime type safety
 export async function createParty(data: CreateParty): Promise<CreatePartyResponse> {

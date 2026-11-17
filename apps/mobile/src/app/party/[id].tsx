@@ -1,5 +1,5 @@
-import { useRouter, useLocalSearchParams, router } from 'expo-router';
-import { StyleSheet, View, Pressable, useWindowDimensions, Button } from "react-native";
+import { useLocalSearchParams, router } from 'expo-router';
+import { StyleSheet, View, Pressable, useWindowDimensions } from 'react-native';
 import { useState, useEffect } from 'react';
 import { Feather, FontAwesome6 } from '@expo/vector-icons';
 
@@ -21,105 +21,87 @@ const partyWSURL = process.env.EXPO_PUBLIC_WS_URL;
 
 export default function PartyScreen() {
   const { userId } = useAuth();
-  const {
-    id,
-    isPreview
-  } = useLocalSearchParams<{ id: string; isPreview?: string }>();
+  const { id, isPreview } = useLocalSearchParams<{ id: string; isPreview?: string }>();
   const { width: screenWidth } = useWindowDimensions();
 
-  const { data, isLoading, error, refetch } = useParty(id);
-  const {
-    connect,
-    disconnect,
-    isConnected,
-    sendMessage,
-    lastLightEvent,
-  } = usePartyWebSocket(partyWSURL, id, userId);
+  const { data, isLoading } = useParty(id);
+  const { connect, disconnect, lastLightEvent } = usePartyWebSocket(partyWSURL, id, userId);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
-  const [backdrop, setBackdrop] = useState('gray');
+
+  // Derive backdrop color from isPlaying and lastLightEvent instead of using effect
+  const backdrop = (() => {
+    if (!isPlaying) return 'gray';
+
+    if (lastLightEvent) {
+      if (lastLightEvent.group === 'solid') {
+        return lastLightEvent.name;
+      } else if (lastLightEvent.group === 'group' && lastLightEvent.name === 'twinkle') {
+        return 'black';
+      } else if (lastLightEvent.group === 'individual' && lastLightEvent.name === 'rainbow') {
+        // @TODO
+        return 'gray';
+      } else if (lastLightEvent.group === 'operator' && lastLightEvent.name === 'clear') {
+        return 'gray';
+      }
+    }
+    return 'gray';
+  })();
 
   const goToBoard = () => {
     router.replace('/');
-  }
+  };
 
   const returnToCreate = () => {
-    router.canGoBack()
-      && !isPreview
-      ? router.back()
-      : router.replace('/create');
-  }
+    router.canGoBack() && !isPreview ? router.back() : router.replace('/create');
+  };
 
   const handleSettings = () => {
     if (!isLocked) {
       setShowSettings(true);
     }
-  }
+  };
 
   const togglePlayPause = () => {
     if (!isLocked) {
       setIsPlaying(!isPlaying);
     }
-  }
+  };
 
   const handleShare = () => {
     // TODO: Implement share functionality
     alert('Share Party');
-  }
+  };
 
   const handleLeaveParty = () => {
     setShowSettings(false);
     goToBoard();
-  }
+  };
 
   const dismissSettings = () => {
     setShowSettings(false);
-  }
+  };
 
   const handleLockPress = () => {
     setIsLocked(!isLocked);
-  }
-
-  const printHelp = () => {
-    sendMessage({
-      type: 'print-stuff',
-    })
-  }
+  };
 
   useEffect(() => {
-    if (!isPlaying) {
-      setBackdrop('gray');
-      return;
-    }
-
-    if (lastLightEvent) {
-      if (lastLightEvent.group == 'solid') {
-        setBackdrop(lastLightEvent.name);
-      } else if (lastLightEvent.group == 'group' && lastLightEvent.name == 'twinkle') {
-        setBackdrop('black')
-      } else if (lastLightEvent.group == 'individual' && lastLightEvent.name == 'rainbow') {
-        // @TODO
-      } else if (lastLightEvent.group == 'operator' && lastLightEvent.name == 'clear') {
-        setBackdrop('gray')
-      }
-    }
-  }, [lastLightEvent, isPlaying])
-
-  useEffect(() => {
-    if (isPreview == 'true') return;
+    if (isPreview === 'true') return;
     connect();
     return () => {
       disconnect();
-    }
+    };
   }, []);
 
-  if (isLoading) return (
-    <View style={styles.container}>
-      <LoadingIsland />
-    </View>
-  );
+  if (isLoading)
+    return (
+      <View style={styles.container}>
+        <LoadingIsland />
+      </View>
+    );
 
   return (
     <View style={styles.container}>
@@ -141,9 +123,9 @@ export default function PartyScreen() {
             }}
           >
             <ComButton
-              text='RETURN'
-              textSizeVariant='h3'
-              textColor='black'
+              text="RETURN"
+              textSizeVariant="h3"
+              textColor="black"
               onPress={returnToCreate}
             />
           </View>
@@ -155,13 +137,13 @@ export default function PartyScreen() {
             delayLongPress={500}
             style={styles.lockButtonInner}
           >
-            <FontAwesome6 
-              name={isLocked ? "lock" : "lock-open"} 
-              size={24} 
+            <FontAwesome6
+              name={isLocked ? 'lock' : 'lock-open'}
+              size={24}
               color={isLocked ? 'white' : 'gray'}
             />
-            <TitleText variant='h3' color={isLocked ? 'white' : 'gray'}>
-              {isLocked ? "hold to unlock" : "hold to lock"}
+            <TitleText variant="h3" color={isLocked ? 'white' : 'gray'}>
+              {isLocked ? 'hold to unlock' : 'hold to lock'}
             </TitleText>
           </Pressable>
         </View>
@@ -171,16 +153,16 @@ export default function PartyScreen() {
           style={[
             styles.playPauseButton,
             {
-              opacity: isPlaying ? .4 : 1
-            }
+              opacity: isPlaying ? 0.4 : 1,
+            },
           ]}
           onPress={togglePlayPause}
           disabled={isLocked}
         >
-          <FontAwesome6 
-            name={isPlaying ? "pause" : "play"} 
-            size={55} 
-            color={isLocked ? '#666' : 'white'} 
+          <FontAwesome6
+            name={isPlaying ? 'pause' : 'play'}
+            size={55}
+            color={isLocked ? '#666' : 'white'}
           />
         </Pressable>
         {/* <View>
@@ -197,32 +179,29 @@ export default function PartyScreen() {
           styles.bottomOverlay,
           {
             backgroundColor: isPlaying ? 'rgba(0, 0, 0, 0.1)' : 'rgba(0, 0, 0, 0.55)',
-          }
+          },
         ]}
       >
         {/* <TitleText variant='h1' numberOfLines={1}>
           {data?.party?.name}
         </TitleText> */}
         <Marquee
-          texts={[
-            data?.party?.name || 'Party', 
-            `SHARE CODE: ${data?.party?.joinCode || '---'}`
-          ]}
+          texts={[data?.party?.name || 'Party', `SHARE CODE: ${data?.party?.joinCode || '---'}`]}
           fontSize={32}
           color={isPlaying ? 'rgba(0, 0, 0, 0.4)' : 'white'}
-          direction='left'
-          containerDimensions={{ width: screenWidth * .8, height: 50 }}
+          direction="left"
+          containerDimensions={{ width: screenWidth * 0.8, height: 50 }}
           flowSpeed={100}
           durationBetweenUnit={0}
         />
-        
+
         {/* Settings Button in Bottom Right */}
         <Pressable
           style={[
             styles.bottomGearButton,
             {
-              width: screenWidth * .2
-            }
+              width: screenWidth * 0.2,
+            },
           ]}
           onPress={handleSettings}
           disabled={isLocked}
@@ -239,31 +218,28 @@ export default function PartyScreen() {
         </View>
 
         {/* QR Icon with Copy and Share Buttons */}
-        <ShareSection
-          joinCode={data?.party?.joinCode || 'err'}
-          onShare={handleShare}
-        />
+        <ShareSection joinCode={data?.party?.joinCode || 'err'} onShare={handleShare} />
 
         {/* Buttons */}
         <View style={styles.settingsSection}>
           <ComButton
-            text='LEAVE PARTY'
-            textColor='white'
-            textSizeVariant='h2'
-            backgroundColor='black'
+            text="LEAVE PARTY"
+            textColor="white"
+            textSizeVariant="h2"
+            backgroundColor="black"
             onPress={handleLeaveParty}
           />
           <ComButton
-            text='RETURN HOME'
-            textColor='white'
-            textSizeVariant='h2'
-            backgroundColor='black'
+            text="RETURN HOME"
+            textColor="white"
+            textSizeVariant="h2"
+            backgroundColor="black"
             onPress={handleLeaveParty}
           />
           <ComButton
-            text='dismiss'
-            textColor='white'
-            textSizeVariant='h3'
+            text="dismiss"
+            textColor="white"
+            textSizeVariant="h3"
             hasContainer={false}
             onPress={dismissSettings}
           />
@@ -276,8 +252,8 @@ export default function PartyScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   lockButton: {
     position: 'absolute',

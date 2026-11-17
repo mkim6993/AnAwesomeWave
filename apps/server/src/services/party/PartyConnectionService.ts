@@ -9,31 +9,32 @@ export class PartyConnectionService {
    * 2. Per-user operations - send special message or remove individual connection
    * 3. Connection cleanup - handle disconnections gracefully by knowing who disconnected
    */
-  private connectionToProfile = new Map<WebSocket, { partyId: string, userId: string }>();
+  private connectionToProfile = new Map<WebSocket, { partyId: string; userId: string }>();
 
   registerConnection(partyId: string, userId: string, socket: WebSocket) {
     try {
-     if (!this.connections.has(partyId)) {
+      if (!this.connections.has(partyId)) {
         this.connections.set(partyId, new Set<WebSocket>());
       }
       this.connections.get(partyId)!.add(socket);
       this.connectionToProfile.set(socket, { partyId, userId });
-      return true; 
+      return true;
     } catch (error) {
+      console.error('Error in registerConnection():', error);
       return false;
     }
   }
 
-  broadcastToParty(partyId: string, event: any) {
-    console.log('broadcasting To party yo:', event)
+  broadcastToParty(partyId: string, event: object) {
     const partyConnections = this.connections.get(partyId);
     if (partyConnections) {
       const message = JSON.stringify({
         type: 'light-event',
         data: event,
       });
-      partyConnections.forEach(socket => {
-        if (socket.readyState === 1) { // WebSocket.OPEN
+      partyConnections.forEach((socket) => {
+        if (socket.readyState === 1) {
+          // WebSocket.OPEN
           socket.send(message);
         }
       });
@@ -57,7 +58,7 @@ export class PartyConnectionService {
   killAllPartyConnections(partyId: string) {
     const partyConnections = this.connections.get(partyId);
     if (partyConnections) {
-      partyConnections.forEach(socket => {
+      partyConnections.forEach((socket) => {
         socket.close(1000, 'Party Ended by Organizer');
         this.connectionToProfile.delete(socket);
       });
@@ -74,7 +75,7 @@ export class PartyConnectionService {
     console.log('');
     console.log('---------------connection to profile---------------');
     console.log('Map size:', this.connectionToProfile.size);
-    this.connectionToProfile.forEach((profile, socket) => {
+    this.connectionToProfile.forEach((profile) => {
       console.log(`Socket -> Party: ${profile.partyId}, User: ${profile.userId}`);
     });
   }

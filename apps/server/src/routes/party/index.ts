@@ -4,12 +4,12 @@ import {
   CreatePartySchema,
   type CreateParty,
   EndPartySchema,
-  type EndParty
+  type EndParty,
 } from '@AnAwesomeWave/shared';
 import partyWebSocketRoutes from './ws.js';
 import partyJoinRoutes from './guest/join.js';
 
-const partyRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
+const partyRoutes: FastifyPluginAsync = async (fastify): Promise<void> => {
   const server = fastify.withTypeProvider<ZodTypeProvider>();
 
   await server.register(partyJoinRoutes);
@@ -19,47 +19,41 @@ const partyRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> => 
    * GET
    * party by id
    */
-  server.get(
-    '/:id',
-    async (request, reply) => {
-      const { id } = request.params as { id: string }
-      
-      const party = await fastify.prisma.party.findUnique({
-        where: { id }
-      })
+  server.get('/:id', async (request, reply) => {
+    const { id } = request.params as { id: string };
 
-      if (!party) {
-        return reply.code(404).send({
-          success: false,
-          error: 'Party not found'
-        })
-      }
+    const party = await fastify.prisma.party.findUnique({
+      where: { id },
+    });
 
-      return { success: true, party };
+    if (!party) {
+      return reply.code(404).send({
+        success: false,
+        error: 'Party not found',
+      });
     }
-  )
+
+    return { success: true, party };
+  });
 
   /**
    * GET
    * party by join code
    */
-  server.get(
-    '/by-join-code/:code',
-    async (request, reply) => {
-      const { code } = request.params as { code: string }
-      const party = await fastify.prisma.party.findUnique({
-        where: { joinCode: code }
-      })
+  server.get('/by-join-code/:code', async (request, reply) => {
+    const { code } = request.params as { code: string };
+    const party = await fastify.prisma.party.findUnique({
+      where: { joinCode: code },
+    });
 
-      if (!party) {
-        return reply.code(404).send({
-          success: false,
-          error: 'Party not found'
-        })
-      }
-      return { success: true, party };
+    if (!party) {
+      return reply.code(404).send({
+        success: false,
+        error: 'Party not found',
+      });
     }
-  )
+    return { success: true, party };
+  });
 
   /**
    * Create a party
@@ -70,10 +64,10 @@ const partyRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> => 
     '/create',
     {
       schema: {
-        body: CreatePartySchema
-      }
+        body: CreatePartySchema,
+      },
     },
-    async (request, reply) => {
+    async (request) => {
       const { name, organizerId, status } = request.body as CreateParty;
 
       // Generate a unique join code (format: ABC123 - 3 letters + 3 numbers)
@@ -82,35 +76,34 @@ const partyRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> => 
         65 + Math.floor(Math.random() * 26),
         65 + Math.floor(Math.random() * 26)
       );
-      const numbers = Math.floor(
-        Math.random() * 1000).toString().padStart(3, '0');
+      const numbers = Math.floor(Math.random() * 1000)
+        .toString()
+        .padStart(3, '0');
       const joinCode = letters + numbers;
 
       // Create Party and Participant in a transaction
-      const { party, participant } = await fastify.prisma.$transaction(
-        async (tx) => {
-          const party = await tx.party.create({
-            data: {
-              name,
-              organizerId,
-              joinCode,
-              status // Optional, will use default if not provided
-            }
-          })
-          const participant = await tx.participant.create({
-            data: {
-              partyId: party.id,
-              userId: organizerId,
-              role: 'OPERATOR'
-            }
-          })
-          return { party, participant }
-        }
-      )
+      const { party, participant } = await fastify.prisma.$transaction(async (tx) => {
+        const party = await tx.party.create({
+          data: {
+            name,
+            organizerId,
+            joinCode,
+            status, // Optional, will use default if not provided
+          },
+        });
+        const participant = await tx.participant.create({
+          data: {
+            partyId: party.id,
+            userId: organizerId,
+            role: 'OPERATOR',
+          },
+        });
+        return { party, participant };
+      });
 
       return { success: true, party, participant };
     }
-  )
+  );
 
   /**
    * End party
@@ -121,22 +114,21 @@ const partyRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> => 
     '/end',
     {
       schema: {
-        body: EndPartySchema
-      }
+        body: EndPartySchema,
+      },
     },
     async (request, reply) => {
       const { partyId, userId } = request.body as EndParty;
-      console.log('/party/end', partyId, userId);
 
       // First, find the party and verify the organizer
       const party = await fastify.prisma.party.findUnique({
-        where: { id: partyId }
+        where: { id: partyId },
       });
 
       if (!party) {
         return reply.code(404).send({
           success: false,
-          error: 'Party not found'
+          error: 'Party not found',
         });
       }
 
@@ -144,21 +136,21 @@ const partyRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> => 
       if (party.organizerId !== userId) {
         return reply.code(403).send({
           success: false,
-          error: 'Only the organizer can end the party'
+          error: 'Only the organizer can end the party',
         });
       }
 
       // Delete the party (participants will be cascade deleted)
       await fastify.prisma.party.delete({
-        where: { id: partyId }
+        where: { id: partyId },
       });
 
-      return { 
-        success: true, 
-        message: 'Party ended successfully' 
+      return {
+        success: true,
+        message: 'Party ended successfully',
       };
     }
   );
-}
+};
 
 export default partyRoutes;

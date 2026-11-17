@@ -6,75 +6,69 @@ import {
   type GetUserPartiesResponse,
 } from '@AnAwesomeWave/shared';
 
-const userRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
+const userRoutes: FastifyPluginAsync = async (fastify): Promise<void> => {
   const server = fastify.withTypeProvider<ZodTypeProvider>();
 
   // GET /user/:id
-  server.get(
-    '/:id',
-    async (request, reply) => {
-      const { id } = request.params as { id: string }
-      
-      const user = await fastify.prisma.user.findUnique({
-        where: { id }
-      })
+  server.get('/:id', async (request) => {
+    const { id } = request.params as { id: string };
 
-      return { success: true, user };
-    }
-  )
+    const user = await fastify.prisma.user.findUnique({
+      where: { id },
+    });
+
+    return { success: true, user };
+  });
 
   /**
    * Get all parties for a user
    * Returns all parties the user is participating in (as organizer or guest)
    */
-  server.get(
-    '/:id/parties',
-    async (request, reply): Promise<GetUserPartiesResponse> => {
-      const { id } = request.params as { id: string }
+  server.get('/:id/parties', async (request): Promise<GetUserPartiesResponse> => {
+    const { id } = request.params as { id: string };
 
-      // Find all participations for this user, including party details
-      const participations = await fastify.prisma.participant.findMany({
-        where: { userId: id },
-        include: {
-          party: {
-            include: {
-              organizer: {
-                select: {
-                  id: true,
-                  username: true,
-                  displayname: true
-                }
+    // Find all participations for this user, including party details
+    const participations = await fastify.prisma.participant.findMany({
+      where: { userId: id },
+      include: {
+        party: {
+          include: {
+            organizer: {
+              select: {
+                id: true,
+                username: true,
+                displayname: true,
               },
-              _count: {
-                select: {
-                  participants: true
-                }
-              }
-            }
-          }
+            },
+            _count: {
+              select: {
+                participants: true,
+              },
+            },
+          },
         },
-        orderBy: {
-          joinedAt: 'desc' // Most recently joined first
-        }
-      })
+      },
+      orderBy: {
+        joinedAt: 'desc', // Most recently joined first
+      },
+    });
 
-      // Transform the data for homescreen display
-      const parties = participations.map(participation => ({
-        id: participation.party.id,
-        name: participation.party.name,
-        status: participation.party.status,
-        joinCode: participation.party.joinCode,
-        createdAt: participation.party.createdAt,
-        organizer: participation.party.organizer,
-        participantCount: participation.party._count.participants,
-        userRole: participation.role,
-        joinedAt: participation.joinedAt,
-        isOrganizer: participation.party.organizerId === id
-      }))
+    // Transform the data for homescreen display
+    const parties = participations.map((participation) => ({
+      id: participation.party.id,
+      name: participation.party.name,
+      status: participation.party.status,
+      joinCode: participation.party.joinCode,
+      createdAt: participation.party.createdAt,
+      organizer: participation.party.organizer,
+      participantCount: participation.party._count.participants,
+      userRole: participation.role,
+      joinedAt: participation.joinedAt,
+      isOrganizer: participation.party.organizerId === id,
+    }));
 
-      return { success: true, parties };
-    }
-  )
+    return { success: true, parties };
+  });
 
   /**
    * Sign Up
@@ -83,21 +77,22 @@ const userRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
     '/sign-up',
     {
       schema: {
-        body: CreateUserSchema
-      }
-    }, async (request, reply) => {
+        body: CreateUserSchema,
+      },
+    },
+    async (request) => {
       const { username, displayname } = request.body as CreateUser;
 
       const user = await fastify.prisma.user.create({
         data: {
           username,
           displayname: displayname || username,
-        }
-      })
+        },
+      });
 
       return { success: true, user };
     }
-  )
+  );
 };
 
 export default userRoutes;

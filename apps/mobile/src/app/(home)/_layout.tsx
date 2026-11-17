@@ -15,7 +15,7 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name='join'
+          name="join"
           options={{
             title: 'Join',
             tabBarIcon: ({ color }) => <span>👥</span>,
@@ -43,22 +43,22 @@ export default function TabLayout() {
   return (
     <NativeTabs>
       <NativeTabs.Trigger name="index">
-        <NativeTabs.Trigger.Icon 
-          sf={{ default: 'square.grid.2x2', selected: 'square.grid.2x2.fill' }} 
+        <NativeTabs.Trigger.Icon
+          sf={{ default: 'square.grid.2x2', selected: 'square.grid.2x2.fill' }}
           md="grid_view"
         />
       </NativeTabs.Trigger>
-      
+
       <NativeTabs.Trigger name="create">
-        <NativeTabs.Trigger.Icon 
-          sf={{ default: 'plus.circle', selected: 'plus.circle.fill' }} 
+        <NativeTabs.Trigger.Icon
+          sf={{ default: 'plus.circle', selected: 'plus.circle.fill' }}
           md="add_circle"
         />
       </NativeTabs.Trigger>
-      
+
       <NativeTabs.Trigger name="profile">
-        <NativeTabs.Trigger.Icon 
-          sf={{ default: 'person.circle', selected: 'person.circle.fill' }} 
+        <NativeTabs.Trigger.Icon
+          sf={{ default: 'person.circle', selected: 'person.circle.fill' }}
           md="account_circle"
         />
       </NativeTabs.Trigger>

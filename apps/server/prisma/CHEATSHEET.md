@@ -60,6 +60,7 @@ pnpm update
 ## 🐘 PostgreSQL & Docker Commands
 
 ### Start/Stop Database
+
 ```bash
 # Start database (detached mode)
 docker compose up -d
@@ -79,6 +80,7 @@ docker ps
 ```
 
 ### Connect to Database
+
 ```bash
 # PostgreSQL CLI (from inside container)
 docker exec -it awesome_wave_db psql -U awesome_user -d awesome_wave
@@ -88,6 +90,7 @@ npx prisma studio
 ```
 
 ### Useful psql Commands
+
 ```sql
 -- List all databases
 \l
@@ -113,6 +116,7 @@ SELECT * FROM "Operator";
 ## 🔷 Prisma Workflow
 
 ### When You Change Schema
+
 ```bash
 # 1. Edit prisma/schema.prisma
 # 2. Create migration and update database
@@ -128,18 +132,21 @@ npx prisma db push
 ```
 
 ### Viewing Data
+
 ```bash
 # Open Prisma Studio (database GUI)
 npx prisma studio
 ```
 
 ### Reset Database
+
 ```bash
 # ⚠️ Deletes all data and re-runs migrations
 npx prisma migrate reset
 ```
 
 ### Check Migration Status
+
 ```bash
 # View migration history
 npx prisma migrate status
@@ -149,6 +156,7 @@ npx prisma migrate deploy
 ```
 
 ### Pull Schema from Existing Database
+
 ```bash
 # Generate Prisma schema from database
 npx prisma db pull
@@ -176,6 +184,7 @@ npx prisma studio
 ```
 
 **What happens during migration:**
+
 1. Prisma analyzes schema changes
 2. Creates SQL migration file in `prisma/migrations/`
 3. Applies migration to database
@@ -231,6 +240,7 @@ const operator = await db.operator.upsert({
 ```
 
 ### Relations
+
 ```typescript
 // Create with nested relations
 const party = await db.party.create({
@@ -255,21 +265,16 @@ const party = await db.party.findUnique({
 ```
 
 ### Filtering & Pagination
+
 ```typescript
 // Complex filtering
 const results = await db.operator.findMany({
   where: {
-    AND: [
-      { status: 'ACTIVE' },
-      { createdAt: { gte: new Date('2024-01-01') } },
-    ],
-    OR: [
-      { name: { contains: 'John' } },
-      { name: { contains: 'Jane' } },
-    ],
+    AND: [{ status: 'ACTIVE' }, { createdAt: { gte: new Date('2024-01-01') } }],
+    OR: [{ name: { contains: 'John' } }, { name: { contains: 'Jane' } }],
   },
-  skip: 0,     // offset
-  take: 20,    // limit
+  skip: 0, // offset
+  take: 20, // limit
   orderBy: {
     createdAt: 'desc',
   },
@@ -336,15 +341,12 @@ const operatorRoutes: FastifyPluginAsync = async (fastify) => {
   });
 
   // POST /operator
-  fastify.post<{ Body: { name: string; status: string } }>(
-    '/',
-    async (request, reply) => {
-      const operator = await fastify.db.operator.create({
-        data: request.body,
-      });
-      return reply.code(201).send(operator);
-    }
-  );
+  fastify.post<{ Body: { name: string; status: string } }>('/', async (request, reply) => {
+    const operator = await fastify.db.operator.create({
+      data: request.body,
+    });
+    return reply.code(201).send(operator);
+  });
 
   // PATCH /operator/:id
   fastify.patch<{
@@ -359,15 +361,12 @@ const operatorRoutes: FastifyPluginAsync = async (fastify) => {
   });
 
   // DELETE /operator/:id
-  fastify.delete<{ Params: { id: string } }>(
-    '/:id',
-    async (request, reply) => {
-      await fastify.db.operator.delete({
-        where: { id: parseInt(request.params.id) },
-      });
-      return reply.code(204).send();
-    }
-  );
+  fastify.delete<{ Params: { id: string } }>('/:id', async (request, reply) => {
+    await fastify.db.operator.delete({
+      where: { id: parseInt(request.params.id) },
+    });
+    return reply.code(204).send();
+  });
 };
 
 export default operatorRoutes;
@@ -431,6 +430,7 @@ docker exec awesome_wave_db psql -U awesome_user -d awesome_wave -c "SELECT pg_s
 ### Common Issues
 
 **"Can't connect to database"**
+
 ```bash
 # Check if Docker is running
 docker ps
@@ -443,12 +443,14 @@ docker compose restart postgres
 ```
 
 **"Client is not generated"**
+
 ```bash
 # Regenerate client
 npx prisma generate
 ```
 
 **"Migration conflicts"**
+
 ```bash
 # Reset and start fresh (⚠️ loses data)
 npx prisma migrate reset
@@ -471,11 +473,13 @@ npx prisma migrate resolve --applied <migration-name>
 ## 🎯 Environment Variables
 
 Your `.env` file should contain:
+
 ```env
 DATABASE_URL="postgresql://awesome_user:awesome_pass@localhost:5432/awesome_wave"
 ```
 
 **Connection string format:**
+
 ```
 postgresql://USER:PASSWORD@HOST:PORT/DATABASE
 ```

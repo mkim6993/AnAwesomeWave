@@ -18,9 +18,7 @@ const OverlayContainer = ({
 
   return (
     <View style={[styles.overlay, containerStyle]}>
-      <View style={[styles.content, contentStyle]}>
-        {children}
-      </View>
+      <View style={[styles.content, contentStyle]}>{children}</View>
     </View>
   );
 };

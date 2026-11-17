@@ -13,12 +13,19 @@
   "scripts": {
     "build": "tsc --build",
     "dev": "tsc --build --watch",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "lint": "eslint . && prettier --check .",
+    "lint:fix": "eslint --fix . && prettier --write ."
   },
   "dependencies": {
     "zod": "^4.2.0"
   },
   "devDependencies": {
-    "typescript": "^5.0.0"
+    "@eslint/js": "^10.0.1",
+    "@typescript-eslint/eslint-plugin": "^8.72.2",
+    "@typescript-eslint/parser": "^8.72.2",
+    "eslint": "^10.15.0",
+    "typescript": "^5.0.0",
+    "typescript-eslint": "^8.72.2"
   }
 }

@@ -15,11 +15,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // TODO: Replace with actual auth implementation using SecureStore
   const [userId, setUserId] = useState<string>(testUserId);
 
-  return (
-    <AuthContext.Provider value={{ userId, setUserId }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={{ userId, setUserId }}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

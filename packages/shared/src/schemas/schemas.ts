@@ -124,8 +124,7 @@ export type UpdateParticipant = z.infer<typeof UpdateParticipantSchema>;
 // ============================================================================
 
 export const JoinPartySchema = z.object({
-  partyId:
-  z.string().cuid(),
+  partyId: z.string().cuid(),
   userId: z.string().cuid().optional(),
   guestToken: z.string().optional(),
 });

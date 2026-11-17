@@ -1,9 +1,6 @@
 import { router } from 'expo-router';
-import { StyleSheet, View, TextInput, Pressable } from "react-native";
+import { StyleSheet, View, TextInput, Pressable } from 'react-native';
 import { useState } from 'react';
-
-// libraries
-import * as Clipboard from 'expo-clipboard';
 
 // queries
 import { usePartyByJoinCode } from '@/api/queries';
@@ -27,12 +24,6 @@ export default function JoinScreen() {
   // Fetch only when manually triggered (enabled: false by default)
   const { data, isLoading, error, refetch } = usePartyByJoinCode(joinCode, false);
 
-  const handlePaste = async () => {
-    const stringToPaste = await Clipboard.getStringAsync();
-    setJoinCode(stringToPaste);
-    setSearchPerformed(false); // Reset search state when pasting
-  };
-
   const handleCodeChange = (text: string) => {
     setJoinCode(text);
     setSearchPerformed(false); // Reset search state when user types
@@ -49,11 +40,11 @@ export default function JoinScreen() {
     if (data?.party) {
       router.push({
         pathname: '/invite/[id]',
-        params: { 
+        params: {
           id: data.party.id,
           partyName: data.party.name,
           fromCode: 'true',
-        }
+        },
       });
     }
   };
@@ -62,24 +53,19 @@ export default function JoinScreen() {
     <View style={styles.container}>
       {/* Top Section - Join Code Input with Paste and Search buttons */}
       <View style={styles.formContainer}>
-        <TitleText variant='h3'>
-          Join Code:
-        </TitleText>
+        <TitleText variant="h3">Join Code:</TitleText>
         <View style={styles.inputRow}>
           <TextInput
-            placeholder='enter join code'
+            placeholder="enter join code"
             placeholderTextColor={placeholderColor}
             style={styles.textInput}
             value={joinCode}
             onChangeText={handleCodeChange}
-            autoCapitalize='none'
+            autoCapitalize="none"
             maxLength={6}
           />
           <View style={styles.buttonGroup}>
-            <Pressable
-              onPress={handleSearch}
-              style={styles.iconButton}
-            >
+            <Pressable onPress={handleSearch} style={styles.iconButton}>
               <FontAwesome6 name="magnifying-glass" size={20} color="white" />
             </Pressable>
           </View>
@@ -92,32 +78,30 @@ export default function JoinScreen() {
           {isLoading ? (
             <View style={styles.searchVisualContainer}>
               <LoadingIsland visible={true} />
-              <TitleText variant='h3'><samp></samp>searching...</TitleText>
+              <TitleText variant="h3">
+                <samp></samp>searching...
+              </TitleText>
             </View>
           ) : error ? (
             <View style={styles.notFoundContainer}>
-              <TitleText variant='h1'>
-                Party Not Found
-              </TitleText>
-              <TitleText variant='h3'>
-                Check the code and try again
-              </TitleText>
+              <TitleText variant="h1">Party Not Found</TitleText>
+              <TitleText variant="h3">Check the code and try again</TitleText>
             </View>
           ) : data?.party ? (
             <>
               <PartyItem
                 title={data.party.name}
                 message={data.party.joinCode}
-                backgroundColor='#84FF32'
+                backgroundColor="#84FF32"
                 sampleImageIndex={0}
                 onPress={handleViewInvite}
               />
               <View style={styles.formContainer}>
                 <ComButton
-                  text='VIEW'
-                  textColor='black'
-                  textSizeVariant='h2'
-                  backgroundColor='#84FF32'
+                  text="VIEW"
+                  textColor="black"
+                  textSizeVariant="h2"
+                  backgroundColor="#84FF32"
                   onPress={handleViewInvite}
                 />
               </View>
@@ -132,7 +116,7 @@ export default function JoinScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "flex-start",
+    justifyContent: 'flex-start',
     paddingHorizontal: 10,
   },
   formContainer: {
@@ -181,5 +165,5 @@ const styles = StyleSheet.create({
     // backgroundColor: 'teal',
     justifyContent: 'flex-end',
     alignItems: 'center',
-  }
+  },
 });

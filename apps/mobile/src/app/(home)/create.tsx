@@ -1,9 +1,6 @@
-import { useRouter, router } from 'expo-router';
-import {
-  Button, StyleSheet, Text, View, Image, useWindowDimensions, 
-  Pressable, Alert, TextInput
-} from "react-native";
-import { useState, useEffect } from 'react';
+import { router } from 'expo-router';
+import { StyleSheet, Text, View, Pressable, Alert, TextInput } from 'react-native';
+import { useState } from 'react';
 
 // auth
 import { useAuth } from '@/providers/AuthProvider';
@@ -27,7 +24,6 @@ export default function CreateScreen() {
   // React Query mutation hook
   const createPartyMutation = useCreateParty();
   const [partyName, setPartyName] = useState<string>('');
-  const [createAllowed, setCreateAllowed] = useState<boolean>(false);
 
   const handleCreateParty = async () => {
     try {
@@ -40,73 +36,53 @@ export default function CreateScreen() {
       // Navigate to overview on success
       router.push({
         pathname: '/organizer/[id]',
-        params: { 
+        params: {
           id: result.party.id,
           partyName: result.party.name,
-        }
+        },
       });
     } catch (error) {
       // Error handling
-      Alert.alert(
-        'Error',
-        error instanceof Error ? error.message : 'Failed to create party'
-      );
+      Alert.alert('Error', error instanceof Error ? error.message : 'Failed to create party');
     }
-  }
+  };
 
   const goToPreview = () => {
     router.push({
       pathname: '/invite/[id]',
-      params: { 
+      params: {
         id: '38dk3',
         isPreview: 'true',
         partyName,
-       }
-    })
-  }
+      },
+    });
+  };
 
   const startOver = () => {
-    console.log('startover')
-    Alert.alert(
-      'Start over?',
-      'This action cannot be undone.',
-      [
-        {
-          text: 'Start Over',
-          style: 'destructive',
-          onPress: () => setPartyName('')
-        },
-        {
-          text: 'Cancel',
-          style: 'cancel'
-        }
-      ]
-    )
-  }
+    console.log('startover');
+    Alert.alert('Start over?', 'This action cannot be undone.', [
+      {
+        text: 'Start Over',
+        style: 'destructive',
+        onPress: () => setPartyName(''),
+      },
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+    ]);
+  };
 
-  useEffect(() => {
-    if (
-      createPartyMutation.isPending === false &&
-      partyName.length > 0
-    ) {
-      setCreateAllowed(true);
-    } else {
-      setCreateAllowed(false);
-    }
-
-  }, [createPartyMutation.isPending, partyName])
+  // Derive createAllowed from state instead of using effect
+  const createAllowed = !createPartyMutation.isPending && partyName.length > 0;
 
   return (
     <View style={styles.container}>
       {/* Name */}
       <View style={styles.formContainer}>
-        <TitleText
-          variant='h3'
-        >
-          Party Name:
-        </TitleText>
+        <TitleText variant="h3">Party Name:</TitleText>
         <TextInput
-          placeholder='enter your party name'
+          placeholder="enter your party name"
           placeholderTextColor={placeholderColor}
           style={{
             // backgroundColor: 'green',
@@ -124,20 +100,11 @@ export default function CreateScreen() {
       </View>
 
       {/* Poster (add photo) */}
-      <TitleText
-        variant='h3'
-      >
-        Poster:
-      </TitleText>
-      <Pressable 
-        style={styles.addPosterContainer}
-        onPress={() => alert('file system')}
-      >
+      <TitleText variant="h3">Poster:</TitleText>
+      <Pressable style={styles.addPosterContainer} onPress={() => alert('file system')}>
         <View style={{ justifyContent: 'center', alignItems: 'center' }}>
           <FontAwesome6 name="file-image" size={24} color="gray" />
-          <Text>
-            add a poster
-          </Text>
+          <Text>add a poster</Text>
         </View>
       </Pressable>
       {/* <Image
@@ -150,50 +117,40 @@ export default function CreateScreen() {
           height: screenWidth * .8
         }}
       /> */}
-      
+
       {/* Add operators */}
       <View style={styles.formContainer}>
-        <TitleText
-          variant='h3'
-        >
-          Lighting Operators:
-        </TitleText>
-        <TitleText
-          variant='h1'
-        >
-          [          ]
-        </TitleText>
+        <TitleText variant="h3">Lighting Operators:</TitleText>
+        <TitleText variant="h1">[ ]</TitleText>
       </View>
 
       <View style={styles.formContainer}>
         <ComButton
-          text='CREATE NOW'
-          textColor='black'
-          textSizeVariant='h2'
-          backgroundColor='#84FF32'
+          text="CREATE NOW"
+          textColor="black"
+          textSizeVariant="h2"
+          backgroundColor="#84FF32"
           onPress={handleCreateParty}
           disabled={!createAllowed}
         />
         <ComButton
-          text='PREVIEW INVITE'
-          textColor='black'
-          textSizeVariant='h3'
-          backgroundColor='#FF87DF'
+          text="PREVIEW INVITE"
+          textColor="black"
+          textSizeVariant="h3"
+          backgroundColor="#FF87DF"
           onPress={goToPreview}
           disabled={!createAllowed}
         />
         <ComButton
-          text='start over'
-          textColor='black'
-          textSizeVariant='h3'
+          text="start over"
+          textColor="black"
+          textSizeVariant="h3"
           hasContainer={false}
           onPress={startOver}
           disabled={!createAllowed}
         />
       </View>
-      <LoadingIsland
-        visible={createPartyMutation.isPending}
-      />
+      <LoadingIsland visible={createPartyMutation.isPending} />
     </View>
   );
 }
@@ -201,7 +158,7 @@ export default function CreateScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "flex-start",
+    justifyContent: 'flex-start',
     paddingHorizontal: 10,
   },
   formContainer: {
@@ -217,5 +174,5 @@ const styles = StyleSheet.create({
     maxWidth: 180,
     alignItems: 'flex-start',
     borderColor: 'gray',
-  }
+  },
 });

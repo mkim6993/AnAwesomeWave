@@ -1,4 +1,4 @@
-import { StyleSheet, View, Image, Pressable, Text } from 'react-native';
+import { StyleSheet, View, Image, Pressable } from 'react-native';
 
 // components
 import TitleText from '@/components/ui/TitleText';
@@ -17,24 +17,24 @@ interface PartyItemProps {
   backgroundColor?: string;
   sampleImageIndex?: number;
   imageOpacity?: number;
-  type?: 'GUEST' | 'OPERATOR'; 
+  type?: 'GUEST' | 'OPERATOR';
 }
 const PartyItem = ({
-  onPress=()=>alert('error'),
+  onPress = () => alert('error'),
   title,
-  message='',
-  backgroundColor='#84FF32',
-  sampleImageIndex=1,
-  imageOpacity=1,
-  type='GUEST'
+  message = '',
+  backgroundColor = '#84FF32',
+  sampleImageIndex = 1,
+  imageOpacity = 1,
+  type = 'GUEST',
 }: PartyItemProps) => {
   return (
     <Pressable
       style={[
         styles.itemContainer,
         {
-          backgroundColor
-        }
+          backgroundColor,
+        },
       ]}
       onPress={onPress}
     >
@@ -44,7 +44,7 @@ const PartyItem = ({
         style={{
           height: 160,
           width: '95%',
-          borderWidth: .5,
+          borderWidth: 0.5,
           opacity: imageOpacity,
         }}
       />
@@ -64,34 +64,21 @@ const PartyItem = ({
           </View>
         </View>
       )}
-      <View style={[
-        styles.title,
-        { backgroundColor }
-        ]}
-      >
-        <TitleText
-          variant='h1'
-          paddingHorizontal={8}
-          numberOfLines={1}
-        >{title}</TitleText>
+      <View style={[styles.title, { backgroundColor }]}>
+        <TitleText variant="h1" paddingHorizontal={8} numberOfLines={1}>
+          {title}
+        </TitleText>
       </View>
       {message !== '' && (
-        <View style={[
-          styles.message,
-          { backgroundColor }
-          ]}
-        >
-          <TitleText
-            variant='h3'
-            paddingHorizontal={8}
-            paddingVertical={1}
-            numberOfLines={2}
-          >{message}</TitleText>
+        <View style={[styles.message, { backgroundColor }]}>
+          <TitleText variant="h3" paddingHorizontal={8} paddingVertical={1} numberOfLines={2}>
+            {message}
+          </TitleText>
         </View>
       )}
     </Pressable>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   itemContainer: {
@@ -109,14 +96,14 @@ const styles = StyleSheet.create({
     left: 8,
     borderRightWidth: 2,
     borderBottomWidth: 2,
-    maxWidth: 360
+    maxWidth: 360,
   },
   message: {
     position: 'absolute',
     bottom: 3,
     right: 8,
     borderLeftWidth: 2,
-    borderTopWidth: 2
+    borderTopWidth: 2,
   },
   operatorOverlayContainer: {
     position: 'absolute',
@@ -126,7 +113,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     padding: 10,
-  }
-})
+  },
+});
 
 export default PartyItem;

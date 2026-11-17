@@ -11,8 +11,8 @@ export const operatorApi = {
   disconnectAll: () =>
     fetchApi<DisconnectAllResponse>('/operator/disconnect', {
       method: 'POST',
-      body: JSON.stringify({ 
-        type: 'disconnect_all' 
+      body: JSON.stringify({
+        type: 'disconnect_all',
       } as DisconnectAllRequest),
     }),
 

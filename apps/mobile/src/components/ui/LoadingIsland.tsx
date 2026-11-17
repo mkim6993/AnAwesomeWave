@@ -1,7 +1,6 @@
-import { Image, View, Platform, ActivityIndicator, Text, useWindowDimensions } from 'react-native';
+import { View, useWindowDimensions } from 'react-native';
 
 import LoadingIndicator from './LoadingIndicator';
-import TitleText from './TitleText';
 
 interface LoadingIndicatorProps {
   androidColor?: string;
@@ -10,9 +9,9 @@ interface LoadingIndicatorProps {
 }
 
 const LoadingIsland = ({
-  androidColor='white',
-  size='large',
-  visible=true,
+  androidColor = 'white',
+  size = 'large',
+  visible = true,
 }: LoadingIndicatorProps) => {
   const { height, width } = useWindowDimensions();
 
@@ -29,7 +28,7 @@ const LoadingIsland = ({
           justifyContent: 'center',
           alignItems: 'center',
         },
-        visible !== true &&  { display: 'none' }
+        visible !== true && { display: 'none' },
       ]}
     >
       {/* Triangle container */}
@@ -52,7 +51,7 @@ const LoadingIsland = ({
             borderBottomColor: 'rgba(0,0,0,0.6)',
           }}
         />
-        
+
         {/* Content centered in triangle */}
         <View
           style={{
@@ -63,14 +62,11 @@ const LoadingIsland = ({
             alignItems: 'center',
           }}
         >
-          <LoadingIndicator
-            androidColor={androidColor}
-            size={size}
-          />
+          <LoadingIndicator androidColor={androidColor} size={size} />
         </View>
       </View>
     </View>
-  )
-}
+  );
+};
 
 export default LoadingIsland;

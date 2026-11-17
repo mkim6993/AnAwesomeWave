@@ -17,10 +17,7 @@ export class ApiError extends Error {
 /**
  * Shared fetch wrapper with base configuration
  */
-export async function fetchApi<T>(
-  endpoint: string,
-  options?: RequestInit
-): Promise<T> {
+export async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     headers: {
       'Content-Type': 'application/json',
@@ -30,8 +27,8 @@ export async function fetchApi<T>(
   });
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ 
-      message: response.statusText 
+    const error = await response.json().catch(() => ({
+      message: response.statusText,
     }));
     throw new ApiError(
       error.message || `API Error: ${response.statusText}`,

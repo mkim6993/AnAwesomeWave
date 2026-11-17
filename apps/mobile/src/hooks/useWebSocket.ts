@@ -1,35 +1,43 @@
-import { BaseEffect } from '@AnAwesomeWave/shared';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 
 // const WS_URL = 'ws://127.0.0.1:3000/party/ws';
 
-export const usePartyWebSocket = (
-  url: string | undefined,
-  partyId: string,
-  userId: string,
-) => {
+export const usePartyWebSocket = (url: string | undefined, partyId: string, userId: string) => {
   const [connected, setConnected] = useState(false);
   const [lastLightEvent, setLastLightEvent] = useState<any>(null);
   const ws = useRef<WebSocket | null>(null);
 
-  const isConnected = (): boolean => {
+  const isConnected = useCallback((): boolean => {
     return ws.current?.readyState === WebSocket.OPEN || false;
-  }
+  }, []);
+
+  const sendMessage = useCallback(
+    (data: any) => {
+      console.log(
+        'calling send message.\nws.current.readyState?',
+        ws.current?.readyState,
+        'WebSocket.OPEN',
+        WebSocket.OPEN
+      );
+      console.log(isConnected() ? 'sending now' : 'not connected FAILED');
+      if (isConnected()) {
+        ws.current!.send(JSON.stringify(data));
+      }
+    },
+    [isConnected]
+  );
 
   /**
    * Establish connection with ws address
-   * @param url 
-   * @returns 
+   * @param url
+   * @returns
    */
-  const connect = (): boolean => {
+  const connect = useCallback((): boolean => {
     try {
       if (!url) throw new Error(`Invalid url provided: ${url}`);
 
       // Prevent duplicate connections
-      if (
-        isConnected() ||
-        ws.current?.readyState === WebSocket.CONNECTING
-      ) {
+      if (isConnected() || ws.current?.readyState === WebSocket.CONNECTING) {
         console.log('Already connected or connecting');
         return true;
       }
@@ -50,7 +58,7 @@ export const usePartyWebSocket = (
           type: 'register',
           partyId,
           userId,
-        })
+        });
       };
 
       // Called when a message is received from the server
@@ -58,9 +66,9 @@ export const usePartyWebSocket = (
         const message = JSON.parse(event.data);
         console.log('onmessage:', message);
 
-        if (message.type == 'light-event') {
+        if (message.type === 'light-event') {
           setLastLightEvent(message.data);
-        } else if (message.type == 'register-response') {
+        } else if (message.type === 'register-response') {
           if (!message.success) {
             console.log('Registration failed, retrying');
             setTimeout(() => {
@@ -68,10 +76,10 @@ export const usePartyWebSocket = (
                 type: 'register',
                 partyId,
                 userId,
-              })
+              });
             }, 3000);
           } else {
-            console.log('Registration success!')
+            console.log('Registration success!');
           }
         }
       };
@@ -93,33 +101,19 @@ export const usePartyWebSocket = (
       console.error('Error in connect():', error);
       return false;
     }
-  }
+  }, [url, partyId, userId, sendMessage, isConnected])
 
-  const disconnect = (): boolean => {
+  const disconnect = useCallback((): boolean => {
     try {
-      if (
-        ws.current &&
-        (
-          isConnected() ||
-          ws.current?.readyState === WebSocket.CONNECTING
-        )
-      ) {
+      if (ws.current && (isConnected() || ws.current?.readyState === WebSocket.CONNECTING)) {
         ws.current.close();
       }
       return true;
     } catch (error) {
-      console.error('Error in disconnect:', error); 
+      console.error('Error in disconnect:', error);
       return false;
     }
-  }
-
-  const sendMessage = (data: any) => {
-    console.log('calling send message.\nws.current.readyState?', ws.current?.readyState, 'WebSocket.OPEN', WebSocket.OPEN);
-    console.log(isConnected() ? 'sending now' : 'not connected FAILED')
-    if (isConnected()) {
-      ws.current!.send(JSON.stringify(data));
-    }
-  };
+  }, [isConnected]);
 
   useEffect(() => {
     // Cleanup: close connection when component unmounts
@@ -127,7 +121,7 @@ export const usePartyWebSocket = (
       ws.current?.close();
     };
   }, []);
-  
+
   return {
     connect,
     disconnect,
@@ -136,4 +130,4 @@ export const usePartyWebSocket = (
     connected,
     lastLightEvent,
   };
-}
+};

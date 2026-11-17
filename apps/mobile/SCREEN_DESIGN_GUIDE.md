@@ -21,31 +21,30 @@ Use this limited color palette throughout the app:
 ## Layout Structure
 
 ### Container Pattern
+
 ```tsx
-<View style={styles.container}>
-  {/* Screen content */}
-</View>
+<View style={styles.container}>{/* Screen content */}</View>;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "flex-start",
+    justifyContent: 'flex-start',
     paddingHorizontal: 10,
   },
 });
 ```
 
 ### Form Container Pattern
+
 Use for grouping related content with consistent spacing:
+
 ```tsx
-<View style={styles.formContainer}>
-  {/* Grouped content */}
-</View>
+<View style={styles.formContainer}>{/* Grouped content */}</View>;
 
 const styles = StyleSheet.create({
   formContainer: {
     marginVertical: 10,
-  }
+  },
 });
 ```
 
@@ -114,6 +113,7 @@ Used for all interactive buttons with consistent styling:
 ```
 
 ### Button Hierarchy
+
 1. **Primary buttons** - Green background, uppercase text, h2 size
 2. **Secondary buttons** - Pink background, uppercase text, h2 size
 3. **Tertiary buttons** - Black background, uppercase text, h2 size
@@ -124,7 +124,7 @@ Used for all interactive buttons with consistent styling:
 Use responsive sizing based on screen dimensions:
 
 ```tsx
-import { useWindowDimensions } from "react-native";
+import { useWindowDimensions } from 'react-native';
 
 const { width: screenWidth } = useWindowDimensions();
 
@@ -132,10 +132,10 @@ const { width: screenWidth } = useWindowDimensions();
   source={require('@/assets/images/currents.png')}
   resizeMode={'cover'}
   style={{
-    width: screenWidth * .55,
-    height: screenWidth * .8
+    width: screenWidth * 0.55,
+    height: screenWidth * 0.8,
   }}
-/>
+/>;
 ```
 
 ## Screen Structure Template
@@ -170,17 +170,17 @@ import { router, useLocalSearchParams } from 'expo-router';
 const goToScreen = () => {
   router.push({
     pathname: '/path/[id]',
-    params: { 
+    params: {
       id: 'value',
-      otherParam: 'value'
-    }
-  })
-}
+      otherParam: 'value',
+    },
+  });
+};
 
 // Receive params
-const { id, otherParam } = useLocalSearchParams<{ 
-  id: string; 
-  otherParam?: string 
+const { id, otherParam } = useLocalSearchParams<{
+  id: string;
+  otherParam?: string;
 }>();
 ```
 
@@ -190,7 +190,7 @@ Keep imports organized in this order:
 
 ```tsx
 import { router, useLocalSearchParams } from 'expo-router';
-import { StyleSheet, View, Image, useWindowDimensions } from "react-native";
+import { StyleSheet, View, Image, useWindowDimensions } from 'react-native';
 
 // components
 import TitleText from '@/components/ui/TitleText';
@@ -200,6 +200,7 @@ import ComButton from '@/components/ui/ComButton';
 ## Examples
 
 Reference these screens for implementation patterns:
+
 - **Create Screen**: `/src/app/(home)/create.tsx` - Multi-section form with image and buttons
 - **Overview Screen**: `/src/app/overview/[id].tsx` - Simple display with action buttons
 
@@ -211,7 +212,6 @@ Reference these screens for implementation patterns:
 - Don't use colors outside the defined palette
 - Don't center-align containers unless specifically needed
 - Don't add extra complexity - keep it simple
-
 
 Colors for operator
 #DCDCDD

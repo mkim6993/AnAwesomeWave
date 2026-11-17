@@ -9,6 +9,7 @@ The Marquee component displays animated scrolling text in multiple directions.
 ## Component Purpose
 
 Creates a ticker-style text animation that:
+
 - Displays text items one at a time from an array
 - Animates text across the screen in configurable directions
 - Cycles through multiple text items sequentially
@@ -17,10 +18,12 @@ Creates a ticker-style text animation that:
 ## Working vs Broken Directions
 
 ### Working ✅
+
 - `up` - Text scrolls from bottom to top
 - `down` - Text scrolls from top to bottom
 
 ### Broken ❌
+
 - `left` - Should scroll right to left (NOT WORKING)
 - `right` - Should scroll left to right (NOT WORKING)
 - `upR` - Should scroll diagonally bottom-left to top-right (NOT WORKING)
@@ -31,6 +34,7 @@ Creates a ticker-style text animation that:
 ## The Problem
 
 When direction prop is set to any horizontal or diagonal value:
+
 1. Text does not appear on screen
 2. No animation occurs
 3. Component renders empty or blank
@@ -89,3 +93,4 @@ REQUIREMENTS:
 3. Ensure animation speed is consistent across all directions
 4. Maintain existing vertical scrolling behavior (no regressions)
 5. Text should be visible during the animation, not just offscreen
+```

@@ -1,13 +1,13 @@
-import { useEffect, useRef } from 'react'
-import { View, Animated, StyleSheet } from 'react-native'
+import { useEffect, useState } from 'react';
+import { View, Animated, StyleSheet } from 'react-native';
 
 interface Star {
-  id: number
-  width: number
-  height: number
-  left: string
-  top: string
-  delay: number
+  id: number;
+  width: number;
+  height: number;
+  left: string;
+  top: string;
+  delay: number;
 }
 
 const TwinklePreview = () => {
@@ -23,7 +23,7 @@ const TwinklePreview = () => {
     { id: 8, width: 9, height: 18, left: '80%', top: '25%', delay: 700 },
     { id: 9, width: 6, height: 12, left: '50%', top: '50%', delay: 500 },
     { id: 10, width: 10, height: 20, left: '35%', top: '10%', delay: 900 },
-  ]
+  ];
 
   return (
     <View style={styles.container}>
@@ -31,17 +31,18 @@ const TwinklePreview = () => {
         <TwinklingStar key={star.id} star={star} />
       ))}
     </View>
-  )
-}
+  );
+};
 
 interface TwinklingStarProps {
-  star: Star
+  star: Star;
 }
 
 const TwinklingStar = ({ star }: TwinklingStarProps) => {
-  const glowScale = useRef(new Animated.Value(1)).current
-  const glowOpacity = useRef(new Animated.Value(0.3)).current
-  const starOpacity = useRef(new Animated.Value(0)).current
+  // Use useState with lazy initialization to avoid ref access during render
+  const [glowScale] = useState(() => new Animated.Value(1));
+  const [glowOpacity] = useState(() => new Animated.Value(0.3));
+  const [starOpacity] = useState(() => new Animated.Value(0));
 
   useEffect(() => {
     const animate = () => {
@@ -87,11 +88,11 @@ const TwinklingStar = ({ star }: TwinklingStarProps) => {
             }),
           ]),
         ])
-      ).start()
-    }
+      ).start();
+    };
 
-    animate()
-  }, [glowScale, glowOpacity, starOpacity, star.delay])
+    animate();
+  }, [star.delay, glowScale, glowOpacity, starOpacity]);
 
   return (
     <View
@@ -136,8 +137,8 @@ const TwinklingStar = ({ star }: TwinklingStarProps) => {
         />
       </View>
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -162,6 +163,6 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: 'white',
   },
-})
+});
 
-export default TwinklePreview
+export default TwinklePreview;

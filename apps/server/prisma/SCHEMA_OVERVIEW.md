@@ -46,19 +46,19 @@
 
 ## Tables at a Glance
 
-| Table | Purpose | Key Fields |
-|-------|---------|------------|
-| **User** | Authenticated users | `username` (unique), `displayname` |
-| **Party** | Events/parties | `joinCode` (unique), `status` |
-| **Participant** | Party membership | `userId` OR `guestToken`, `role` |
+| Table           | Purpose             | Key Fields                         |
+| --------------- | ------------------- | ---------------------------------- |
+| **User**        | Authenticated users | `username` (unique), `displayname` |
+| **Party**       | Events/parties      | `joinCode` (unique), `status`      |
+| **Participant** | Party membership    | `userId` OR `guestToken`, `role`   |
 
 ---
 
 ## Enums
 
 ```typescript
-PartyStatus = SCHEDULED | LIVE | ENDED
-ParticipantRole = OPERATOR | GUEST
+PartyStatus = SCHEDULED | LIVE | ENDED;
+ParticipantRole = OPERATOR | GUEST;
 ```
 
 ---
@@ -105,25 +105,25 @@ CASCADE RULES:
 ```typescript
 // Check if user has active LIVE party as organizer
 await prisma.party.findFirst({
-  where: { organizerId: userId, status: 'LIVE' }
+  where: { organizerId: userId, status: 'LIVE' },
 });
 
 // Check if user is participating in any party
 await prisma.participant.findFirst({
-  where: { userId: userId }
+  where: { userId: userId },
 });
 
 // Get user's organized parties
 await prisma.user.findUnique({
   where: { id: userId },
-  include: { organizedParties: true }
+  include: { organizedParties: true },
 });
 
 // Get user's participations
 await prisma.user.findUnique({
   where: { id: userId },
-  include: { 
-    participations: { include: { party: true } }
-  }
+  include: {
+    participations: { include: { party: true } },
+  },
 });
 ```

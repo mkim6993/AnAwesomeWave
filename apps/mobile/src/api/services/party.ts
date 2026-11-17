@@ -17,14 +17,12 @@ import {
 
 /**
  * Party API Service
- * 
+ *
  * Pure fetch functions with Zod validation.
  * These are framework-agnostic and can be used anywhere.
  */
 
-export async function createParty(
-  data: CreateParty
-): Promise<CreatePartyResponse> {
+export async function createParty(data: CreateParty): Promise<CreatePartyResponse> {
   const response = await fetchApi<unknown>('/party/create', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -34,9 +32,7 @@ export async function createParty(
   return CreatePartyResponseSchema.parse(response);
 }
 
-export async function joinParty(
-  data: JoinParty
-): Promise<JoinPartyResponse> {
+export async function joinParty(data: JoinParty): Promise<JoinPartyResponse> {
   const response = await fetchApi<unknown>('/party/join', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -50,16 +46,12 @@ export async function getParty(id: string): Promise<GetPartyResponse> {
   return GetPartyResponseSchema.parse(response);
 }
 
-export async function getPartyByJoinCode(
-  code: string
-): Promise<GetPartyByJoinCodeResponse> {
+export async function getPartyByJoinCode(code: string): Promise<GetPartyByJoinCodeResponse> {
   const response = await fetchApi<unknown>(`/party/by-join-code/${code}`);
   return GetPartyByJoinCodeResponseSchema.parse(response);
 }
 
-export async function endParty(
-  data: EndParty
-): Promise<EndPartyResponse> {
+export async function endParty(data: EndParty): Promise<EndPartyResponse> {
   const response = await fetchApi<unknown>('/party/end', {
     method: 'DELETE',
     body: JSON.stringify(data),

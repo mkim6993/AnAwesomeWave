@@ -13,7 +13,9 @@
     "build:ts": "npm run clean && tsc",
     "watch:ts": "tsc -w",
     "dev": "npm run build:ts && concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"npm:watch:ts\" \"npm:dev:start\"",
-    "dev:start": "sleep 3 && fastify start -w -l info dist/src/app.js"
+    "dev:start": "sleep 3 && fastify start -w -l info dist/src/app.js",
+    "lint": "eslint . && prettier --check .",
+    "lint:fix": "eslint --fix . && prettier --write ."
   },
   "keywords": [],
   "dependencies": {
@@ -29,16 +31,22 @@
     "fastify-plugin": "^6.0.0"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@prisma/client": "^7.10.1",
     "@types/node": "^26.0.0",
     "@types/ws": "^8.18.2",
+    "@typescript-eslint/eslint-plugin": "^8.72.2",
+    "@typescript-eslint/parser": "^8.72.2",
     "c8": "^12.0.0",
     "concurrently": "^10.0.1",
     "dotenv": "^18.0.9",
+    "eslint": "^10.15.0",
+    "eslint-plugin-import": "^2.32.0",
     "fastify-tsconfig": "^3.0.0",
     "prisma": "^7.10.1",
     "ts-node": "^10.4.0",
-    "typescript": "~6.0.2"
+    "typescript": "~6.0.2",
+    "typescript-eslint": "^8.72.2"
   },
   "type": "module"
 }

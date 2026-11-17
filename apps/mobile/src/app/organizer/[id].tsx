@@ -1,7 +1,6 @@
-import { useRouter, useLocalSearchParams, router } from 'expo-router';
-import { StyleSheet, View, Image, useWindowDimensions } from "react-native";
-import { useEffect, useState, useCallback } from 'react';
-import { useFocusEffect } from 'expo-router';
+import { useLocalSearchParams, router, useFocusEffect } from 'expo-router';
+import { StyleSheet, View, Image, useWindowDimensions } from 'react-native';
+import { useState, useCallback } from 'react';
 
 // auth
 import { useAuth } from '@/providers/AuthProvider';
@@ -25,13 +24,7 @@ export default function PartyOrganizerViewScreen() {
   const [showShare, setShowShare] = useState<boolean>(false);
 
   // Fetch user parties with React Query
-  const { 
-    data, 
-    isLoading, 
-    error, 
-    refetch,
-    isRefetching 
-  } = useParty(id);
+  const { data, refetch } = useParty(id);
 
   // End party mutation
   const endPartyMutation = useEndParty();
@@ -42,20 +35,20 @@ export default function PartyOrganizerViewScreen() {
       params: {
         id,
         partyName: partyData?.name || 'Party',
-      }
+      },
     });
-  }
+  };
 
   const handleShare = () => {
     // TODO: Implement share functionality
     alert('Share Party');
-  }
+  };
 
   const handleEndParty = () => {
     if (!userId) {
       return;
     }
-    
+
     endPartyMutation.mutate(
       { partyId: id, userId: userId },
       {
@@ -66,18 +59,14 @@ export default function PartyOrganizerViewScreen() {
         onError: (error) => {
           // Show error message to user
           alert(`Failed to end party: ${error.message}`);
-        }
+        },
       }
     );
-  }
+  };
 
   const goToBoard = () => {
-    router.replace('/')
-  }
-
-  const handleCopyQR = () => {
-    alert('handleCopyQR');
-  }
+    router.replace('/');
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -91,69 +80,63 @@ export default function PartyOrganizerViewScreen() {
     <View style={styles.container}>
       {/* Party Name */}
       <View style={styles.formContainer}>
-        <TitleText variant='h3'>
-          Party Name:
-        </TitleText>
-        <TitleText variant='h1'>
-          {partyData?.name}
-        </TitleText>
+        <TitleText variant="h3">Party Name:</TitleText>
+        <TitleText variant="h1">{partyData?.name}</TitleText>
       </View>
 
       {/* Image */}
-      <TitleText variant='h3'>
-        Poster:
-      </TitleText>
+      <TitleText variant="h3">Poster:</TitleText>
       <Image
         source={require('@/assets/images/currents.png')}
         resizeMode={'cover'}
         style={{
-          width: screenWidth * .55,
-          height: screenWidth * .8
+          width: screenWidth * 0.55,
+          height: screenWidth * 0.8,
         }}
       />
 
       {/* Buttons */}
       <View style={styles.formContainer}>
         <ComButton
-          text='OPERATE LIGHTS'
-          textColor='black'
-          textSizeVariant='h2'
-          backgroundColor='#84FF32'
+          text="OPERATE LIGHTS"
+          textColor="black"
+          textSizeVariant="h2"
+          backgroundColor="#84FF32"
           onPress={goToController}
         />
         <ComButton
-          text='SHARE INVITE'
-          textColor='black'
-          textSizeVariant='h2'
-          backgroundColor='#FF87DF'
+          text="SHARE INVITE"
+          textColor="black"
+          textSizeVariant="h2"
+          backgroundColor="#FF87DF"
           onPress={() => setShowShare(true)}
         />
         <ComButton
-          text='END PARTY'
-          textColor='white'
-          textSizeVariant='h2'
-          backgroundColor='black'
+          text="END PARTY"
+          textColor="white"
+          textSizeVariant="h2"
+          backgroundColor="black"
           onPress={handleEndParty}
         />
         <ComButton
-          text='go home'
-          textColor='black'
-          textSizeVariant='h3'
+          text="go home"
+          textColor="black"
+          textSizeVariant="h3"
           hasContainer={false}
           onPress={goToBoard}
         />
       </View>
 
       {/* Share Overlay */}
-      <OverlayContainer visible={showShare} containerStyle={{ backgroundColor: 'rgba(0, 0, 0, 0.85)' }}>
-        <ShareSection
-          joinCode={partyData?.joinCode || ''}
-          onShare={handleShare}
-        />
+      <OverlayContainer
+        visible={showShare}
+        containerStyle={{ backgroundColor: 'rgba(0, 0, 0, 0.85)' }}
+      >
+        <ShareSection joinCode={partyData?.joinCode || ''} onShare={handleShare} />
         <ComButton
-          text='dismiss'
-          textColor='white'
-          textSizeVariant='h3'
+          text="dismiss"
+          textColor="white"
+          textSizeVariant="h3"
           hasContainer={false}
           onPress={() => setShowShare(false)}
         />
@@ -168,10 +151,10 @@ export default function PartyOrganizerViewScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "flex-start",
+    justifyContent: 'flex-start',
     paddingHorizontal: 10,
   },
   formContainer: {
     marginVertical: 10,
-  }
+  },
 });

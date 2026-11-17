@@ -17,19 +17,19 @@ const partyURL = process.env.EXPO_PUBLIC_WS_URL;
 
 const LightController = () => {
   const { userId } = useAuth();
-  const { id, partyName } = useLocalSearchParams<{ id: string, partyName: string }>();
+  const { id, partyName } = useLocalSearchParams<{ id: string; partyName: string }>();
 
-  const {
-    connect,
-    disconnect,
-    isConnected,
-    sendMessage
-  } = usePartyWebSocket(partyURL, id, userId)
+  const { connect, disconnect, sendMessage } = usePartyWebSocket(partyURL, id, userId);
 
   const goBack = () => {
     router.back();
-  }
+  };
 
+  /**
+   *
+   * @param group solid | group | individual | operator
+   * @param name twinkle | rainbow | clear | color: string
+   */
   const handleEffectPress = (group: string, name: string) => {
     console.log('Group:', group, 'Name:', name);
     sendMessage({
@@ -38,45 +38,41 @@ const LightController = () => {
       event: {
         group,
         name,
-      }
-    })
-  }
+      },
+    });
+  };
 
   useEffect(() => {
     connect();
     return () => {
       disconnect();
-    }
+    };
   }, []);
 
   return (
     <View style={styles.container}>
       {/* Back Button */}
       <ComButton
-        text='< leave controller'
-        textColor='black'
-        textSizeVariant='h3'
+        text="< leave controller"
+        textColor="black"
+        textSizeVariant="h3"
         hasContainer={false}
         onPress={goBack}
       />
 
       {/* Title */}
       <View style={styles.formContainer}>
-        <TitleText variant='h1'>
-          Lighting Controller
-        </TitleText>
-        <TitleText variant='h3'>
-          party: {partyName}
-        </TitleText>
+        <TitleText variant="h1">Lighting Controller</TitleText>
+        <TitleText variant="h3">party: {partyName}</TitleText>
       </View>
 
       {/* Stop Button */}
       <View style={styles.formContainer}>
         <ComButton
-          text='CLEAR'
-          textColor='white'
-          textSizeVariant='h2'
-          backgroundColor='#FF0000'
+          text="CLEAR"
+          textColor="white"
+          textSizeVariant="h2"
+          backgroundColor="#FF0000"
           onPress={() => handleEffectPress('operator', 'clear')}
         />
       </View>
@@ -85,38 +81,36 @@ const LightController = () => {
       <ScrollView style={styles.scrollContainer}>
         {/* Solid Colors Section */}
         <View style={styles.formContainer}>
-          <TitleText variant='h3'>
-            solid colors
-          </TitleText>
+          <TitleText variant="h3">solid colors</TitleText>
           <View style={styles.effectsGrid}>
             <EffectItem
-              label='#84FF32'
-              solidColor='#84FF32'
+              label="#84FF32"
+              solidColor="#84FF32"
               onPress={() => handleEffectPress('solid', '#84FF32')}
             />
             <EffectItem
-              label='#FF87DF'
-              solidColor='#FF87DF'
+              label="#FF87DF"
+              solidColor="#FF87DF"
               onPress={() => handleEffectPress('solid', '#FF87DF')}
             />
             <EffectItem
-              label='#2ffae2'
-              solidColor='#2ffae2'
+              label="#2ffae2"
+              solidColor="#2ffae2"
               onPress={() => handleEffectPress('solid', '#2ffae2')}
             />
             <EffectItem
-              label='#ff3939'
-              solidColor='#ff3939'
+              label="#ff3939"
+              solidColor="#ff3939"
               onPress={() => handleEffectPress('solid', '#ff3939')}
             />
             <EffectItem
-              label='#ffff62'
-              solidColor='#ffff62'
+              label="#ffff62"
+              solidColor="#ffff62"
               onPress={() => handleEffectPress('solid', '#ffff62')}
             />
             <EffectItem
-              label='#9D00FF'
-              solidColor='#9D00FF'
+              label="#9D00FF"
+              solidColor="#9D00FF"
               onPress={() => handleEffectPress('solid', '#9D00FF')}
             />
           </View>
@@ -124,13 +118,11 @@ const LightController = () => {
 
         {/* Group Effects Section */}
         <View style={styles.formContainer}>
-          <TitleText variant='h3'>
-            group effects
-          </TitleText>
+          <TitleText variant="h3">group effects</TitleText>
           <View style={styles.effectsGrid}>
             <EffectItem
-              label='Twinkle'
-              solidColor='#FF6B6B'
+              label="Twinkle"
+              solidColor="#FF6B6B"
               onPress={() => handleEffectPress('group', 'twinkle')}
             >
               <TwinklePreview />
@@ -140,13 +132,11 @@ const LightController = () => {
 
         {/* Individual Effects Section */}
         <View style={styles.formContainer}>
-          <TitleText variant='h3'>
-            individual effects
-          </TitleText>
+          <TitleText variant="h3">individual effects</TitleText>
           <View style={styles.effectsGrid}>
             <EffectItem
-              label='Rainbow'
-              solidColor='#FFD93D'
+              label="Rainbow"
+              solidColor="#FFD93D"
               onPress={() => handleEffectPress('individual', 'rainbow')}
             >
               <RainbowPreview durationPerColor={50} />
@@ -155,8 +145,8 @@ const LightController = () => {
         </View>
       </ScrollView>
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -175,7 +165,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: 10,
     marginTop: 10,
-  }
+  },
 });
 
 export default LightController;

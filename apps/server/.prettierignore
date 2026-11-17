@@ -1,0 +1,15 @@
+# Build output
+dist/
+*.js.map
+
+# Dependencies
+node_modules/
+
+# Agent files
+.agents/
+
+# Cache
+.turbo/
+
+# Prisma generated
+prisma/generated/

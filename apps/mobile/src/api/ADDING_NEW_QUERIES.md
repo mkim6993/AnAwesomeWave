@@ -5,6 +5,7 @@ This guide walks through the complete process of creating React Query hooks for 
 ## 📋 Prerequisites
 
 Before starting, you should have:
+
 - A working backend endpoint (Fastify route in `apps/server/src/routes/`)
 - The endpoint URL path and HTTP method (GET, POST, etc.)
 - Understanding of the request parameters and response structure
@@ -30,6 +31,7 @@ Backend Endpoint
 **Location:** `/packages/shared/src/schemas/schemas.ts`
 
 ### Why?
+
 The shared package provides type-safe, validated schemas that both the server and client use. This ensures runtime type safety with Zod validation.
 
 ### What to do:
@@ -43,6 +45,7 @@ The shared package provides type-safe, validated schemas that both the server an
 For endpoint: `GET /party/get-by-join-code/:code`
 
 Backend returns:
+
 ```typescript
 // Success case
 { success: true, party: { id, name, joinCode, ... } }
@@ -52,6 +55,7 @@ Backend returns:
 ```
 
 Schema:
+
 ```typescript
 export const GetPartyByJoinCodeResponseSchema = z.object({
   success: z.boolean(),
@@ -61,12 +65,14 @@ export type GetPartyByJoinCodeResponse = z.infer<typeof GetPartyByJoinCodeRespon
 ```
 
 ### Schema Naming Convention:
+
 - Response schemas: `Get<Resource><Action>ResponseSchema`
 - Request schemas: `<Action><Resource>Schema`
 
 ### Common Patterns:
 
 **Single resource GET:**
+
 ```typescript
 export const GetResourceResponseSchema = z.object({
   success: z.boolean(),
@@ -75,6 +81,7 @@ export const GetResourceResponseSchema = z.object({
 ```
 
 **List/collection GET:**
+
 ```typescript
 export const GetResourcesResponseSchema = z.object({
   success: z.boolean(),
@@ -83,6 +90,7 @@ export const GetResourcesResponseSchema = z.object({
 ```
 
 **POST/PUT with created/updated resource:**
+
 ```typescript
 export const CreateResourceResponseSchema = z.object({
   success: z.boolean(),
@@ -91,6 +99,7 @@ export const CreateResourceResponseSchema = z.object({
 ```
 
 **Action with side effects:**
+
 ```typescript
 export const ActionResourceResponseSchema = z.object({
   success: z.boolean(),
@@ -106,6 +115,7 @@ export const ActionResourceResponseSchema = z.object({
 **Location:** `/apps/mobile/src/api/services/<domain>.ts` (e.g., `party.ts`, `user.ts`)
 
 ### Why?
+
 Service functions are pure, framework-agnostic API calls. They can be used anywhere (components, tests, scripts) without React dependencies.
 
 ### What to do:
@@ -124,9 +134,7 @@ import {
   type GetPartyByJoinCodeResponse,
 } from '@AnAwesomeWave/shared';
 
-export async function getPartyByJoinCode(
-  code: string
-): Promise<GetPartyByJoinCodeResponse> {
+export async function getPartyByJoinCode(code: string): Promise<GetPartyByJoinCodeResponse> {
   const response = await fetchApi<unknown>(`/party/get-by-join-code/${code}`);
   return GetPartyByJoinCodeResponseSchema.parse(response);
 }
@@ -135,6 +143,7 @@ export async function getPartyByJoinCode(
 ### Function Patterns by HTTP Method:
 
 **GET with path parameter:**
+
 ```typescript
 export async function getResource(id: string): Promise<GetResourceResponse> {
   const response = await fetchApi<unknown>(`/resource/${id}`);
@@ -143,27 +152,26 @@ export async function getResource(id: string): Promise<GetResourceResponse> {
 ```
 
 **GET with query parameters:**
+
 ```typescript
-export async function getResources(
-  filters?: { status?: string; page?: number }
-): Promise<GetResourcesResponse> {
+export async function getResources(filters?: {
+  status?: string;
+  page?: number;
+}): Promise<GetResourcesResponse> {
   const params = new URLSearchParams();
   if (filters?.status) params.append('status', filters.status);
   if (filters?.page) params.append('page', String(filters.page));
-  
+
   const query = params.toString();
-  const response = await fetchApi<unknown>(
-    `/resources${query ? `?${query}` : ''}`
-  );
+  const response = await fetchApi<unknown>(`/resources${query ? `?${query}` : ''}`);
   return GetResourcesResponseSchema.parse(response);
 }
 ```
 
 **POST with body:**
+
 ```typescript
-export async function createResource(
-  data: CreateResource
-): Promise<CreateResourceResponse> {
+export async function createResource(data: CreateResource): Promise<CreateResourceResponse> {
   const response = await fetchApi<unknown>('/resource/create', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -173,6 +181,7 @@ export async function createResource(
 ```
 
 **PATCH/PUT:**
+
 ```typescript
 export async function updateResource(
   id: string,
@@ -187,10 +196,9 @@ export async function updateResource(
 ```
 
 **DELETE:**
+
 ```typescript
-export async function deleteResource(
-  id: string
-): Promise<DeleteResourceResponse> {
+export async function deleteResource(id: string): Promise<DeleteResourceResponse> {
   const response = await fetchApi<unknown>(`/resource/${id}`, {
     method: 'DELETE',
   });
@@ -199,6 +207,7 @@ export async function deleteResource(
 ```
 
 ### Key Principles:
+
 - ✅ Always type `fetchApi<unknown>` - never trust the API
 - ✅ Always validate with `.parse()` - runtime type safety
 - ✅ Keep functions pure - no side effects or React hooks
@@ -213,6 +222,7 @@ export async function deleteResource(
 **Location:** `/apps/mobile/src/api/queries/<domain>.ts`
 
 ### Why?
+
 React Query hooks provide automatic caching, loading states, error handling, and cache invalidation for React components.
 
 ### What to do:
@@ -236,6 +246,7 @@ export const partyKeys = {
 ```
 
 **Key Structure Pattern:**
+
 - Base: `['resource']`
 - Collections: `['resource', 'list']` or `['resource', 'list', { filters }]`
 - Detail: `['resource', id]`
@@ -279,12 +290,9 @@ export function useCreateResource() {
     onSuccess: (response) => {
       // Invalidate list queries to refetch
       queryClient.invalidateQueries({ queryKey: resourceKeys.all });
-      
+
       // Optionally set the cache for the new resource
-      queryClient.setQueryData(
-        resourceKeys.detail(response.resource.id),
-        response
-      );
+      queryClient.setQueryData(resourceKeys.detail(response.resource.id), response);
     },
   });
 }
@@ -293,6 +301,7 @@ export function useCreateResource() {
 ### Common useQuery Configurations:
 
 **Basic query:**
+
 ```typescript
 export function useResource(id: string) {
   return useQuery({
@@ -303,6 +312,7 @@ export function useResource(id: string) {
 ```
 
 **Query with conditional fetching:**
+
 ```typescript
 export function useResource(id: string | undefined) {
   return useQuery({
@@ -314,18 +324,20 @@ export function useResource(id: string | undefined) {
 ```
 
 **Query with custom stale time:**
+
 ```typescript
 export function useResources() {
   return useQuery({
     queryKey: resourceKeys.all,
     queryFn: getResources,
     staleTime: 1000 * 60 * 10, // 10 minutes
-    gcTime: 1000 * 60 * 30,    // 30 minutes (formerly cacheTime)
+    gcTime: 1000 * 60 * 30, // 30 minutes (formerly cacheTime)
   });
 }
 ```
 
 **Query with polling:**
+
 ```typescript
 export function useLiveResource(id: string) {
   return useQuery({
@@ -337,6 +349,7 @@ export function useLiveResource(id: string) {
 ```
 
 **Query with smart retry logic:**
+
 ```typescript
 import { ApiError } from '../client';
 
@@ -359,13 +372,13 @@ export function useResource(id: string) {
 ### Common useMutation Patterns:
 
 **Mutation with optimistic updates:**
+
 ```typescript
 export function useUpdateResource() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateResource }) =>
-      updateResource(id, data),
+    mutationFn: ({ id, data }: { id: string; data: UpdateResource }) => updateResource(id, data),
     onMutate: async ({ id, data }) => {
       // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: resourceKeys.detail(id) });
@@ -384,16 +397,13 @@ export function useUpdateResource() {
     onError: (err, variables, context) => {
       // Rollback on error
       if (context?.previous) {
-        queryClient.setQueryData(
-          resourceKeys.detail(variables.id),
-          context.previous
-        );
+        queryClient.setQueryData(resourceKeys.detail(variables.id), context.previous);
       }
     },
     onSettled: (data, error, variables) => {
       // Refetch to ensure consistency
-      queryClient.invalidateQueries({ 
-        queryKey: resourceKeys.detail(variables.id) 
+      queryClient.invalidateQueries({
+        queryKey: resourceKeys.detail(variables.id),
       });
     },
   });
@@ -401,6 +411,7 @@ export function useUpdateResource() {
 ```
 
 **Mutation with multiple cache updates:**
+
 ```typescript
 export function useDeleteResource() {
   const queryClient = useQueryClient();
@@ -410,7 +421,7 @@ export function useDeleteResource() {
     onSuccess: (_, id) => {
       // Remove from cache
       queryClient.removeQueries({ queryKey: resourceKeys.detail(id) });
-      
+
       // Refetch lists
       queryClient.invalidateQueries({ queryKey: resourceKeys.all });
     },
@@ -421,11 +432,13 @@ export function useDeleteResource() {
 ### Cache Invalidation Strategy:
 
 Use `invalidateQueries` when:
+
 - You want React Query to refetch the data
 - The exact new state is unknown
 - Multiple queries might be affected
 
 Use `setQueryData` when:
+
 - You have the new data from the mutation response
 - You want immediate UI updates without refetching
 - You know the exact cache structure
@@ -445,7 +458,7 @@ import { Text, ActivityIndicator } from 'react-native';
 function JoinPartyScreen() {
   const [code, setCode] = useState('');
   const { data, isLoading, error } = usePartyByJoinCode(
-    code, 
+    code,
     code.length === 6 // Only fetch when code is complete
   );
 
@@ -525,7 +538,7 @@ function PartyDetailsScreen({ partyId }: { partyId: string }) {
 ```typescript
 function ProfileScreen() {
   const { data: user } = useCurrentUser();
-  
+
   // Only fetch parties when we have the user ID
   const { data: parties } = useUserParties(user?.id, {
     enabled: !!user?.id,
@@ -542,6 +555,7 @@ function ProfileScreen() {
 When adding a new endpoint query tool, verify each step:
 
 ### 1. Shared Package Schema (`packages/shared/src/schemas/schemas.ts`)
+
 - [ ] Response schema created with Zod
 - [ ] Type exported using `z.infer<>`
 - [ ] Schema name follows convention (`Get<Resource><Action>ResponseSchema`)
@@ -549,6 +563,7 @@ When adding a new endpoint query tool, verify each step:
 - [ ] Reuses existing schemas (e.g., `PartySchema`, `UserSchema`)
 
 ### 2. Service Function (`apps/mobile/src/api/services/<domain>.ts`)
+
 - [ ] Function is async and returns `Promise<ResponseType>`
 - [ ] Uses `fetchApi<unknown>()` (never trust API types)
 - [ ] Validates response with `.parse()`
@@ -558,6 +573,7 @@ When adding a new endpoint query tool, verify each step:
 - [ ] Request body stringified for POST/PUT/PATCH
 
 ### 3. React Query Hook (`apps/mobile/src/api/queries/<domain>.ts`)
+
 - [ ] Query key added to `<domain>Keys` object
 - [ ] Uses `useQuery` for GET or `useMutation` for POST/PUT/DELETE
 - [ ] Has JSDoc comment explaining what it does
@@ -566,10 +582,12 @@ When adding a new endpoint query tool, verify each step:
 - [ ] Hook name follows convention: `use<Action><Resource>`
 
 ### 4. Exports (`services/index.ts` and `queries/index.ts`)
+
 - [ ] New service function exported from `services/index.ts`
 - [ ] New hook exported from `queries/index.ts`
 
 ### 5. Testing
+
 - [ ] Import works in a component without errors
 - [ ] Query fetches data correctly
 - [ ] Loading state displays appropriately
@@ -581,6 +599,7 @@ When adding a new endpoint query tool, verify each step:
 ## 🚨 Common Pitfalls & How to Avoid Them
 
 ### ❌ Pitfall 1: Forgetting Runtime Validation
+
 ```typescript
 // BAD - No validation
 export async function getParty(id: string): Promise<GetPartyResponse> {
@@ -597,6 +616,7 @@ export async function getParty(id: string): Promise<GetPartyResponse> {
 ```
 
 ### ❌ Pitfall 2: Using React Hooks in Services
+
 ```typescript
 // BAD - Service has React dependency
 export async function createParty(data: CreateParty) {
@@ -628,6 +648,7 @@ export function useCreateParty() {
 ```
 
 ### ❌ Pitfall 3: Not Adding Query Keys Properly
+
 ```typescript
 // BAD - Hardcoded keys, hard to manage
 export function useParty(id: string) {
@@ -654,6 +675,7 @@ export function useParty(id: string) {
 ```
 
 ### ❌ Pitfall 4: Not Handling Conditional Queries
+
 ```typescript
 // BAD - Queries even when ID is undefined
 export function useParty(id?: string) {
@@ -676,6 +698,7 @@ export function useParty(id?: string) {
 ```
 
 ### ❌ Pitfall 5: Missing Cache Invalidation
+
 ```typescript
 // BAD - Cache never updates after mutation
 export function useCreateParty() {
@@ -706,29 +729,32 @@ export function useCreateParty() {
 Let's walk through adding support for `GET /party/get-by-join-code/:code`:
 
 ### Step 1: Backend Analysis
+
 ```typescript
 // Backend endpoint in apps/server/src/routes/party/index.ts
 server.get('/get-by-join-code/:code', async (request, reply) => {
-  const { code } = request.params as { code: string }
+  const { code } = request.params as { code: string };
   const party = await fastify.prisma.party.findUnique({
-    where: { joinCode: code }
-  })
+    where: { joinCode: code },
+  });
 
   if (!party) {
     return reply.code(404).send({
       success: false,
-      error: 'Party not found'
-    })
+      error: 'Party not found',
+    });
   }
   return { success: true, party };
-})
+});
 ```
 
 Response shape:
+
 - Success: `{ success: true, party: Party }`
 - Error: `{ success: false, error: string }`
 
 ### Step 2: Shared Schema
+
 ```typescript
 // In packages/shared/src/schemas/schemas.ts
 
@@ -736,12 +762,11 @@ export const GetPartyByJoinCodeResponseSchema = z.object({
   success: z.boolean(),
   party: PartySchema.nullable(), // nullable to handle 404
 });
-export type GetPartyByJoinCodeResponse = z.infer<
-  typeof GetPartyByJoinCodeResponseSchema
->;
+export type GetPartyByJoinCodeResponse = z.infer<typeof GetPartyByJoinCodeResponseSchema>;
 ```
 
 ### Step 3: Service Function
+
 ```typescript
 // In apps/mobile/src/api/services/party.ts
 
@@ -750,15 +775,14 @@ import {
   type GetPartyByJoinCodeResponse,
 } from '@AnAwesomeWave/shared';
 
-export async function getPartyByJoinCode(
-  code: string
-): Promise<GetPartyByJoinCodeResponse> {
+export async function getPartyByJoinCode(code: string): Promise<GetPartyByJoinCodeResponse> {
   const response = await fetchApi<unknown>(`/party/get-by-join-code/${code}`);
   return GetPartyByJoinCodeResponseSchema.parse(response);
 }
 ```
 
 ### Step 4: Query Hook
+
 ```typescript
 // In apps/mobile/src/api/queries/party.ts
 
@@ -786,13 +810,14 @@ export function usePartyByJoinCode(code: string, enabled = true) {
 ```
 
 ### Step 5: Use in Component
+
 ```typescript
 // In a component
 import { usePartyByJoinCode } from '@/api/queries/party';
 
 function JoinWithCodeScreen() {
   const [joinCode, setJoinCode] = useState('');
-  
+
   const { data, isLoading, error } = usePartyByJoinCode(
     joinCode,
     joinCode.length === 6 // Only query when code is complete
@@ -806,11 +831,11 @@ function JoinWithCodeScreen() {
         placeholder="Enter 6-character code"
         maxLength={6}
       />
-      
+
       {isLoading && <ActivityIndicator />}
-      
+
       {error && <Text>Party not found</Text>}
-      
+
       {data?.party && (
         <View>
           <Text>Found: {data.party.name}</Text>
@@ -849,6 +874,7 @@ If you are an AI agent implementing a new query tool:
 7. **Test the changes** by using the hook in a component
 
 **Common mistakes to avoid:**
+
 - Not validating with Zod in the service
 - Using React hooks in services
 - Forgetting to add query keys
@@ -856,6 +882,7 @@ If you are an AI agent implementing a new query tool:
 - Missing cache invalidation in mutations
 
 **When in doubt:**
+
 - Look at existing implementations in the same file
 - Follow the patterns consistently
 - Refer to this guide for step-by-step instructions

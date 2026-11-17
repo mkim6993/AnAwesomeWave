@@ -1,4 +1,4 @@
-import { Text, StyleSheet, TextProps } from 'react-native';
+import { Text, TextProps } from 'react-native';
 import { ReactNode } from 'react';
 
 interface TitleProps extends Omit<TextProps, 'style'> {
@@ -34,8 +34,8 @@ const TitleText = ({
   variant = 'h2',
   size,
   color,
-  paddingHorizontal=0,
-  paddingVertical=0,
+  paddingHorizontal = 0,
+  paddingVertical = 0,
   ...textProps
 }: TitleProps) => {
   return (
@@ -45,12 +45,12 @@ const TitleText = ({
         styles[variant],
         size !== undefined && { fontSize: size },
         color !== undefined && { color },
-        { paddingHorizontal, paddingVertical }
+        { paddingHorizontal, paddingVertical },
       ]}
     >
       {children}
     </Text>
-  )
-}
+  );
+};
 
 export default TitleText;

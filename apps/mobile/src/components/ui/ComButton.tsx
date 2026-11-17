@@ -1,4 +1,4 @@
-import { View, Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 
 // components
 import TitleText from '@/components/ui/TitleText';
@@ -16,11 +16,11 @@ interface ComButtonProps {
 const ComButton = ({
   onPress,
   text,
-  textColor='black',
+  textColor = 'black',
   textSizeVariant,
-  backgroundColor='none',
+  backgroundColor = 'none',
   disabled,
-  hasContainer=true
+  hasContainer = true,
 }: ComButtonProps) => {
   return (
     <Pressable
@@ -34,22 +34,21 @@ const ComButton = ({
         paddingHorizontal: 10,
         borderColor: textColor,
         borderWidth: hasContainer ? 2 : 0,
-        ...styles.container
+        ...styles.container,
       }}
     >
-      <TitleText
-        variant={textSizeVariant}
-        color={textColor}
-      >{text}</TitleText>
+      <TitleText variant={textSizeVariant} color={textColor}>
+        {text}
+      </TitleText>
     </Pressable>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
     alignContent: 'center',
-  }
-})
+  },
+});
 
 export default ComButton;

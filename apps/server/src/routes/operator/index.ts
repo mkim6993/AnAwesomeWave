@@ -1,22 +1,23 @@
-import { type FastifyPluginAsync } from "fastify";
+import { type FastifyPluginAsync } from 'fastify';
 import { BaseEffect } from '@AnAwesomeWave/shared';
-import { ConnectionOperation } from'../../types/party_controls';
+import { ConnectionOperation } from '../../types/party_controls';
 
-const operatorRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
-  fastify.get("/", async function (request, reply) {
-    return "this is an operator plugin";
+const operatorRoutes: FastifyPluginAsync = async (fastify): Promise<void> => {
+  fastify.get('/', async function () {
+    return 'this is an operator plugin';
   });
 
-  fastify.get('/manual-mode', { websocket: true }, (socket, req) => {
-    console.log('client connected to operator manual-mode websocket');
-
-    socket.on('message', (data: { toString: () => string; }) => {
+  fastify.get('/manual-mode', { websocket: true }, (socket) => {
+    socket.on('message', (data: { toString: () => string }) => {
       const parsed: BaseEffect = JSON.parse(data.toString());
 
       if (
-        !parsed.color || typeof parsed.color !== 'string' ||
-        !parsed.opacity || typeof parsed.opacity !== 'number' ||
-        !parsed.duration || typeof parsed.duration !== 'number'
+        !parsed.color ||
+        typeof parsed.color !== 'string' ||
+        !parsed.opacity ||
+        typeof parsed.opacity !== 'number' ||
+        !parsed.duration ||
+        typeof parsed.duration !== 'number'
       ) {
         socket.send(JSON.stringify({ type: 'error', data: 'Invalid effect data' }));
       }
@@ -33,9 +34,8 @@ const operatorRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> 
 
     socket.on('close', () => {
       console.log('client disconnected from operator');
-    })
+    });
   });
-
 
   /**
    * * Disconnect WS connections
@@ -46,7 +46,7 @@ const operatorRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> 
     if (reqBody.type !== 'disconnect_all') {
       return reply.code(400).send({
         success: false,
-        message: 'Only disconnect_all operation is currently supported'
+        message: 'Only disconnect_all operation is currently supported',
       });
     }
 
@@ -61,7 +61,7 @@ const operatorRoutes: FastifyPluginAsync = async (fastify, opts): Promise<void> 
 
     return {
       success: true,
-      message: `Disconnected ${disconnectedCount} clients`
+      message: `Disconnected ${disconnectedCount} clients`,
     };
   });
 };

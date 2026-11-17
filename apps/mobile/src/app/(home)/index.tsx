@@ -1,7 +1,6 @@
-import { useRouter, router } from 'expo-router';
-import { Button, StyleSheet, Text, View, Image, ScrollView, RefreshControl } from "react-native";
-import { useState, useEffect, useCallback } from 'react';
-import { useFocusEffect } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
+import { Button, StyleSheet, Text, View, ScrollView, RefreshControl } from 'react-native';
+import { useCallback } from 'react';
 
 // auth
 import { useAuth } from '@/providers/AuthProvider';
@@ -11,23 +10,13 @@ import { useUserParties } from '@/api/queries';
 
 // components
 import LoadingIndicator from '@/components/ui/LoadingIndicator';
-import LoadingIsland from '@/components/ui/LoadingIsland';
-import TitleText from '@/components/ui/TitleText';
-
 import PartyItem from '@/components/board/PartyItem';
-import InviteItem from '@/components/board/InviteItem';
 
 export default function BoardScreen() {
   const { userId } = useAuth();
 
   // Fetch user parties with React Query
-  const { 
-    data, 
-    isLoading, 
-    error, 
-    refetch,
-    isRefetching 
-  } = useUserParties(userId);
+  const { data, isLoading, error, refetch, isRefetching } = useUserParties(userId);
 
   useFocusEffect(
     useCallback(() => {
@@ -36,18 +25,12 @@ export default function BoardScreen() {
   );
 
   const goToParty = (partyId: string, isOrganizer: boolean) => {
-    router.push(`/${isOrganizer ? 'organizer' : 'party'}/${partyId}`)
-  }
-
-  const goToInvite = (id: string) => {
-    router.push(`/invite/${id}`)
-  }
+    router.push(`/${isOrganizer ? 'organizer' : 'party'}/${partyId}`);
+  };
 
   // Separate parties by role
-  const guestParties = data?.parties.filter(p => p.userRole === 'GUEST') ?? [];
-  const operatorParties = data?.parties.filter(p => p.userRole === 'OPERATOR') ?? [];
-
-
+  const guestParties = data?.parties.filter((p) => p.userRole === 'GUEST') ?? [];
+  const operatorParties = data?.parties.filter((p) => p.userRole === 'OPERATOR') ?? [];
 
   // Show loading state on initial load
   if (isLoading) {
@@ -77,7 +60,9 @@ export default function BoardScreen() {
         refreshControl={
           <RefreshControl
             refreshing={isRefetching}
-            onRefresh={() => { refetch(); }}
+            onRefresh={() => {
+              refetch();
+            }}
           />
         }
       >
@@ -116,7 +101,7 @@ export default function BoardScreen() {
                   onPress={() => goToParty(party.id, true)}
                   backgroundColor={'gray'}
                   sampleImageIndex={2}
-                  imageOpacity={.8}
+                  imageOpacity={0.8}
                   type={'OPERATOR'}
                 />
               ))}
@@ -160,7 +145,7 @@ export default function BoardScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
+    alignItems: 'center',
     paddingHorizontal: 10,
   },
   centered: {
@@ -172,7 +157,7 @@ const styles = StyleSheet.create({
   sectionLabelContainer: {
     width: '100%',
     alignItems: 'center',
-    marginTop: 20
+    marginTop: 20,
   },
   errorText: {
     fontSize: 18,

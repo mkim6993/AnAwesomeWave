@@ -1,6 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { StyleSheet, View, Image, useWindowDimensions } from "react-native";
-import { useState } from 'react';
+import { StyleSheet, View, Image, useWindowDimensions } from 'react-native';
 
 // auth
 import { useAuth } from '@/providers/AuthProvider';
@@ -16,16 +15,11 @@ import LoadingIsland from '@/components/ui/LoadingIsland';
 
 export default function InviteScreen() {
   const { userId } = useAuth();
-  const {
-    id,
-    partyName,
-    isPreview,
-    fromCode
-  } = useLocalSearchParams<{
-    id: string,
-    partyName?: string,
-    isPreview?: string,
-    fromCode?: string,
+  const { id, partyName, isPreview, fromCode } = useLocalSearchParams<{
+    id: string;
+    partyName?: string;
+    isPreview?: string;
+    fromCode?: string;
   }>();
   const joinPartyMutation = useJoinParty();
   const { width: screenWidth } = useWindowDimensions();
@@ -43,29 +37,26 @@ export default function InviteScreen() {
           pathname: '/party/[id]',
           params: {
             id: result.party.id,
-          }
-        })
+          },
+        });
       }
     } catch (error) {
       console.error('Error in handleAccept()', error);
-      alert('Error in handleAccept()')
+      alert('Error in handleAccept()');
     }
-  }
+  };
 
   const handleDecline = () => {
     router.replace('/');
-  }
+  };
 
   const handleNotNow = () => {
     router.back();
-  }
+  };
 
   const returnToCreate = () => {
-    router.canGoBack()
-      && previewMode
-      ? router.back()
-      : router.replace('/create');
-  }
+    router.canGoBack() && previewMode ? router.back() : router.replace('/create');
+  };
 
   return (
     <View style={styles.container}>
@@ -81,9 +72,9 @@ export default function InviteScreen() {
           }}
         >
           <ComButton
-            text='RETURN'
-            textSizeVariant='h3'
-            textColor='black'
+            text="RETURN"
+            textSizeVariant="h3"
+            textColor="black"
             onPress={returnToCreate}
           />
         </View>
@@ -91,9 +82,7 @@ export default function InviteScreen() {
       <View style={styles.card}>
         {/* Party Name */}
         <View style={styles.formContainer}>
-          <TitleText variant='h1'>
-            {partyName || 'Party Name'}
-          </TitleText>
+          <TitleText variant="h1">{partyName || 'Party Name'}</TitleText>
         </View>
 
         {/* Poster */}
@@ -101,35 +90,35 @@ export default function InviteScreen() {
           source={require('@/assets/images/currents.png')}
           resizeMode={'cover'}
           style={{
-            width: screenWidth * .7,
-            height: screenWidth * 1.0
+            width: screenWidth * 0.7,
+            height: screenWidth * 1.0,
           }}
         />
 
         {/* Buttons */}
         <View style={styles.formContainer}>
           <ComButton
-            text='ACCEPT'
-            textColor='black'
-            textSizeVariant='h2'
-            backgroundColor='#84FF32'
+            text="ACCEPT"
+            textColor="black"
+            textSizeVariant="h2"
+            backgroundColor="#84FF32"
             onPress={handleAccept}
             disabled={previewMode || joinPartyMutation.isPending}
           />
           {showDecline && (
             <ComButton
-              text='DECLINE'
-              textColor='black'
-              textSizeVariant='h2'
-              backgroundColor='#FF87DF'
+              text="DECLINE"
+              textColor="black"
+              textSizeVariant="h2"
+              backgroundColor="#FF87DF"
               onPress={handleDecline}
               disabled={previewMode || joinPartyMutation.isPending}
             />
           )}
           <ComButton
-            text='not now'
-            textColor='black'
-            textSizeVariant='h3'
+            text="not now"
+            textColor="black"
+            textSizeVariant="h3"
             hasContainer={false}
             onPress={handleNotNow}
             disabled={previewMode}
@@ -143,8 +132,8 @@ export default function InviteScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingVertical: 20,
     paddingHorizontal: 15,
     backgroundColor: '#f5f5f5',
@@ -172,6 +161,6 @@ const styles = StyleSheet.create({
     // backgroundColor: 'green',
     flex: 1,
     position: 'absolute',
-    zIndex: 1
-  }
+    zIndex: 1,
+  },
 });
